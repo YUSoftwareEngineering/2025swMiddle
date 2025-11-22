@@ -1,22 +1,39 @@
+### 1. 목표 생성하기 (모든 정보 포함)
 POST http://localhost:8080/api/v1/goals
 Content-Type: application/json
 
 {
-  "title": "스프링 부트 연결 성공!",
-  "description": "H2 DB 연결 기념 목표 생성 테스트",
-  "targetDate": "2025-11-23"
+  "title": "스프링 부트 심화 학습",
+  "description": "카테고리와 알림까지 완벽하게!",
+  "targetDate": "2025-11-25",
+  "category": "STUDY",
+  "isNotificationEnabled": true,
+  "scheduledTime": "14:00:00"
 }
 
-### 2. 목표 수정하기 (Update)
+### 2. 목표 수정하기
 PUT http://localhost:8080/api/v1/goals/1
 Content-Type: application/json
 
 {
-  "title": "목표 수정 성공!",
-  "description": "제목이랑 내용이 아주 잘 바뀌었습니다.",
-  "targetDate": "2025-12-25"
+  "title": "저녁 헬스장 가기",
+  "description": "공부 대신 운동으로 변경함",
+  "targetDate": "2025-11-25",
+  "category": "EXERCISE",
+  "isNotificationEnabled": false,
+  "scheduledTime": "18:30:00"
 }
 
-###
+### 3. [오류 테스트]
+POST http://localhost:8080/api/v1/goals
+Content-Type: application/json
 
+{
+  "title": "",
+  "description": "제목이 없어서 에러가 나야 해요",
+  "targetDate": "2025-11-25",
+  "category": "ETC"
+}
+
+### 4. 목표 삭제하기
 DELETE http://localhost:8080/api/v1/goals/1
