@@ -9,7 +9,7 @@ import java.time.LocalTime;
 @Entity // 이 클래스가 DB 테이블이 됨을 명시
 @Getter // 모든 필드의 Getter 메서드 자동 생성
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 (JPA 필수)
-public class DailyGoal {
+public class Goal {
 
     @Id // Primary Key (기본키)
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto Increment (자동 번호 증가)
@@ -29,9 +29,10 @@ public class DailyGoal {
     @Column(nullable = false)
     private LocalDate targetDate; //  startDate/endDate를 하루 단위로 단순화
 
-    //  status (ONGOING, COMPLETED 등)를 단순화하여 완료 여부로 구현
-    @Column(nullable = false)
-    private Boolean isCompleted = false;
+    @Enumerated(EnumType.STRING)
+    private GoalStatus status;
+    private String statusMemo;
+    private String proofUrl;
 
     @Enumerated(EnumType.STRING) // DB에 "EXERCISE" 글자로 저장됨
     private GoalCategory category;
@@ -44,8 +45,8 @@ public class DailyGoal {
     private LocalDateTime updatedAt; // 수정 시각
 
     @Builder // 빌더 패턴으로 객체 생성을 쉽게 함
-    public DailyGoal(Long userId, String title, String description, LocalDate targetDate,
-                     GoalCategory category, boolean isNotificationEnabled, LocalTime scheduledTime) {
+    public Goal(Long userId, String title, String description, LocalDate targetDate,
+                GoalCategory category, boolean isNotificationEnabled, LocalTime scheduledTime) {
         this.userId = userId;
         this.title = title;
         this.description = description;
@@ -53,9 +54,9 @@ public class DailyGoal {
         this.category = category;
         this.isNotificationEnabled = isNotificationEnabled;
         this.scheduledTime = scheduledTime;
-        this.isCompleted = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.status = GoalStatus.PENDING;
     }
 
     // 비즈니스 로직: 목표 수정 기능 (Setter 대신 사용)
@@ -71,8 +72,10 @@ public class DailyGoal {
     }
 
     // 비즈니스 로직: 완료 상태 토글
-    public void changeStatus(boolean isCompleted) {
-        this.isCompleted = isCompleted;
+    public void changeStatus(GoalStatus status, String statusMemo, String proofUrl) {
+        this.status = status;
+        this.statusMemo = statusMemo;
+        this.proofUrl = proofUrl;
         this.updatedAt = LocalDateTime.now();
     }
 }

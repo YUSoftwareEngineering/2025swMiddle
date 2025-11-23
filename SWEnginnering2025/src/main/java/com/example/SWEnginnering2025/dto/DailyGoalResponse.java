@@ -1,6 +1,6 @@
 package com.example.SWEnginnering2025.dto;
 
-import com.example.SWEnginnering2025.domain.DailyGoal;
+import com.example.SWEnginnering2025.domain.Goal;
 import com.example.SWEnginnering2025.domain.GoalCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +22,7 @@ public class DailyGoalResponse {
     private LocalDateTime createdAt;
 
     // Entity -> DTO 변환기 (공장)
-    public static DailyGoalResponse from(DailyGoal entity) {
+    public static DailyGoalResponse from(Goal entity) {
         return DailyGoalResponse.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())

@@ -1,24 +1,24 @@
 package com.example.SWEnginnering2025.service;
 
-import com.example.SWEnginnering2025.domain.DailyGoal;
+import com.example.SWEnginnering2025.domain.Goal;
 import com.example.SWEnginnering2025.dto.DailyGoalRequest;
 import com.example.SWEnginnering2025.dto.DailyGoalResponse;
-import com.example.SWEnginnering2025.repository.DailyGoalRepository;
+import com.example.SWEnginnering2025.repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service // "나 서비스야!" 라고 명찰 달기
 @RequiredArgsConstructor // Repository를 자동으로 연결해줌
-public class DailyGoalService {
+public class GoalService {
 
-    private final DailyGoalRepository dailyGoalRepository;
+    private final GoalRepository goalRepository;
 
     // 1. 목표 생성
     @Transactional
     public DailyGoalResponse createGoal(DailyGoalRequest request) {
         // 상자(DTO)에서 꺼내서 진짜 데이터(Entity)로 변환
-        DailyGoal goal = DailyGoal.builder()
+        Goal goal = Goal.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .targetDate(request.getTargetDate())
@@ -29,7 +29,7 @@ public class DailyGoalService {
                 .build();
 
         // 저장
-        DailyGoal savedGoal = dailyGoalRepository.save(goal);
+        Goal savedGoal = goalRepository.save(goal);
 
         // 결과 상자(DTO)로 포장해서 반환
         return DailyGoalResponse.from(savedGoal);
@@ -37,7 +37,7 @@ public class DailyGoalService {
     // 2. 목표 수정
     @Transactional
     public DailyGoalResponse updateGoal(Long id, DailyGoalRequest request) {
-        DailyGoal goal = dailyGoalRepository.findById(id)
+        Goal goal = goalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
         // 내용 수정 (더티 체킹: 저장(save) 안 불러도 알아서 DB가 바뀜)
         goal.update(request.getTitle(), request.getDescription(), request.getTargetDate(),
@@ -50,10 +50,10 @@ public class DailyGoalService {
     @Transactional
     public void deleteGoal(Long id) {
         // DB에서 목표 찾기
-        DailyGoal goal = dailyGoalRepository.findById(id)
+        Goal goal = goalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
 
         // 삭제
-        dailyGoalRepository.delete(goal);
+        goalRepository.delete(goal);
     }
 }

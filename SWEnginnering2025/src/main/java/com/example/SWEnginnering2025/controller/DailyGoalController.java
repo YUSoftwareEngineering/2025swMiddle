@@ -2,7 +2,7 @@ package com.example.SWEnginnering2025.controller;
 
 import com.example.SWEnginnering2025.dto.DailyGoalRequest;
 import com.example.SWEnginnering2025.dto.DailyGoalResponse;
-import com.example.SWEnginnering2025.service.DailyGoalService;
+import com.example.SWEnginnering2025.service.GoalService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,26 +13,26 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class DailyGoalController {
 
-    private final DailyGoalService dailyGoalService;
+    private final GoalService goalService;
 
     // 1. 목표 생성 (POST)
     @PostMapping
     public ResponseEntity<DailyGoalResponse> createGoal(@RequestBody @Valid DailyGoalRequest request) { // @Valid 추가
-        DailyGoalResponse response = dailyGoalService.createGoal(request);
+        DailyGoalResponse response = goalService.createGoal(request);
         return ResponseEntity.ok(response);
     }
 
     // 2. 목표 수정 (PUT /api/v1/goals/{id})
     @PutMapping("/{id}")
     public ResponseEntity<DailyGoalResponse> updateGoal(@PathVariable Long id, @RequestBody @Valid DailyGoalRequest request) { // @Valid 추가
-        DailyGoalResponse response = dailyGoalService.updateGoal(id, request);
+        DailyGoalResponse response = goalService.updateGoal(id, request);
         return ResponseEntity.ok(response);
     }
 
     // 3. 목표 삭제 (DELETE /api/v1/goals/{id})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGoal(@PathVariable Long id) {
-        dailyGoalService.deleteGoal(id);
+        goalService.deleteGoal(id);
         return ResponseEntity.ok().build();
     }
 }
