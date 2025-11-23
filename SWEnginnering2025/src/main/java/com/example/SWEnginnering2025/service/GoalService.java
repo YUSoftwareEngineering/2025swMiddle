@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.SWEnginnering2025.domain.GoalStatus;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
 
 @Service // "나 서비스야!" 라고 명찰 달기
 @RequiredArgsConstructor // Repository를 자동으로 연결해줌
@@ -23,6 +26,14 @@ public class GoalService {
     // 1. 목표 생성
     @Transactional
     public GoalResponse createGoal(CreateGoalRequest request) {
+        // 중복 체크 로직
+        boolean isDuplicate = goalRepository.existsByUserIdAndTargetDateAndTitle(
+                1L, request.getTargetDate(), request.getTitle());
+
+        if (isDuplicate) {
+            //409 Conflict 에러
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 유사한 목표가 있습니다.");
+        }
         // 상자(DTO)에서 꺼내서 진짜 데이터(Entity)로 변환
         Goal goal = Goal.builder()
                 .title(request.getTitle())
