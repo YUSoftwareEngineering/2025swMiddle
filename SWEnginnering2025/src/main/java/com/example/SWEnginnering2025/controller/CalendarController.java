@@ -9,6 +9,7 @@ package com.example.SWEnginnering2025.controller;
 
 import com.example.SWEnginnering2025.dto.DailyCalendarDto;
 import com.example.SWEnginnering2025.dto.WeeklyCalendarDto;
+import com.example.SWEnginnering2025.dto.MonthlyCalendarDto;
 import com.example.SWEnginnering2025.service.GoalService; // 컨트롤러는 HTTP 요청만 받고, 로직은 전부 이 서비스에게 맡김
 
 // 스프링 MVC 어노테이션들을 쓰기 위한 import
@@ -33,6 +34,16 @@ public class CalendarController {
     public CalendarController(GoalService GoalService) { // 스프링이 애플리케이션을 시작할 때 CalendarService 빈을 만들어 이 생성자의 GoalService 파라미터에 넣어 줌
         this.GoalService = GoalService; // 우리는 그 객체를 this.GoalService 필드에 저장해 두고 아래의 메서드들에서 사용
     }
+
+    @GetMapping("/monthly")
+    public MonthlyCalendarDto getMonthlyCalendar(
+            @RequestParam Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date
+    ) {
+        return GoalService.getMonthlyCalendar(userId, date);
+    }
+
 
     @GetMapping("/weekly") // HTTP GET 요청 중에서  GET /api/calendar/weekly 로 들어오는 요청을 이 메서드와 매핑
     public WeeklyCalendarDto getWeeklyCalendar( // 반환 타입이 WeeklyCalendarDto 이므로 호출 결과가 JSON 으로 변환되어 프론트로 넘어감

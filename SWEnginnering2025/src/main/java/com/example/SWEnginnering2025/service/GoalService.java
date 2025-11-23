@@ -1,17 +1,21 @@
 /*
     Project: GoalService.java
-    Author: CES
+    Author: CES, YNY
 	Date of creation: 2025.11.23
 	Date of last update: 2025.11.23
 */
 
 package com.example.SWEnginnering2025.service;
-
 import com.example.SWEnginnering2025.dto.DailyCalendarDto;
 import com.example.SWEnginnering2025.dto.WeeklyCalendarDto;
 import com.example.SWEnginnering2025.model.Goal;
 import com.example.SWEnginnering2025.model.GoalStatus;
 import com.example.SWEnginnering2025.repository.GoalRepository;
+import com.example.SWEnginnering2025.dto.MonthlyCalendarDto;
+import java.time.YearMonth;
+import java.time.format.TextStyle;
+import java.util.Locale;
+
 
 // @Service, @Transactional 같은 스프링 어노테이션 사용을 위해 import
 import org.springframework.stereotype.Service;
@@ -31,6 +35,44 @@ public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자
 
     public GoalService(GoalRepository goalRepository) {
         this.goalRepository = goalRepository;
+    }
+
+    // 월간 캘린더 조회
+    public MonthlyCalendarDto getMonthlyCalendar(Long userId, LocalDate baseDate) {
+
+        // baseDate 가 포함된 달의 1일, 마지막 날 계산
+        YearMonth ym = YearMonth.from(baseDate);
+        LocalDate monthStart = ym.atDay(1);                        // 1일
+        LocalDate monthEnd = ym.atEndOfMonth();                    // 마지막 날
+        int lengthOfMonth = ym.lengthOfMonth();                    // 일 수
+
+        // 그 달 동안의 모든 Goal 조회
+        List<Goal> goals =
+                goalRepository.findByUserIdAndTargetDateBetween(userId, monthStart, monthEnd);
+
+        // 날짜별로 묶기
+        Map<LocalDate, List<Goal>> byDate = goals.stream()
+                .collect(Collectors.groupingBy(Goal::getTargetDate));
+
+        List<MonthlyCalendarDto.DaySummary> days = new ArrayList<>();
+
+        // 1일부터 마지막 날까지 하루씩 돌면서 요약 만들기
+        for (int d = 1; d <= lengthOfMonth; d++) {
+            LocalDate date = ym.atDay(d);
+            List<Goal> daily = byDate.getOrDefault(date, Collections.emptyList());
+
+            int total = daily.size();
+            int done = (int) daily.stream()
+                    .filter(g -> g.getStatus() == GoalStatus.DONE)
+                    .count();
+
+            String dayOfWeek = date.getDayOfWeek()
+                    .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+
+            days.add(new MonthlyCalendarDto.DaySummary(date, total, done, dayOfWeek));
+        }
+
+        return new MonthlyCalendarDto(monthStart, monthEnd, days);
     }
 
     // 주간 캘린더 조회
@@ -62,8 +104,12 @@ public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자
                     .filter(g -> g.getStatus() == GoalStatus.DONE) // 상태가 DONE 인 목표들만 골라냄
                     .count(); // 필터링된 목표의 개수를 세서 done(완료된 목표 개수)에 저장
 
-            // 방금 계산한 날짜 (date), 전체 목표 수 (total), 완료 수 (done)를 사용해서 DaySummary 객체를 하나 만들고, days 리스트에 추가
-            days.add(new WeeklyCalendarDto.DaySummary(date, total, done));
+            // 요일 문자열 (월, 화, 수 ...)
+            String dayOfWeek = date.getDayOfWeek()
+                    .getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+
+            // 방금 계산한 날짜 (date), 전체 목표 수 (total), 완료 수 (done), 요일(dayOfWeek)를 사용해서 DaySummary 객체를 하나 만들고, days 리스트에 추가
+            days.add(new WeeklyCalendarDto.DaySummary(date, total, done, dayOfWeek));
         }
 
         return new WeeklyCalendarDto(monday, sunday, days); // 이 값이 컨트롤러 거쳐 프론트로 내려감

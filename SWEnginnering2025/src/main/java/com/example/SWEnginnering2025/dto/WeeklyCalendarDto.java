@@ -34,18 +34,21 @@ public class WeeklyCalendarDto { // 한 주(월~일)의 캘린더 정보를 한�
     public List<DaySummary> getDays() { return days; } // days 리스트(각 날짜의 요약 정보들)를 읽어오는 메소드
 
     // 하루에 대한 요약 정보
-    public static class DaySummary { // 한 날짜(예: 11월 5일)에 대한 정보(몇 개 중 몇 개 완료인지 등)를 담음.
+    public static class DaySummary {
         private LocalDate date;  // 이 요약이 어느 날짜에 대한 것인지
+        private String dayOfWeek; // 요일 (예: "월", "화", "수")
         private int totalGoals; // 그 날짜에 등록된 전체 목표 개수
         private int doneCount; // 그 날짜에 등록된 목표 중에서 완료(DONE)된 목표 개수
 
-        public DaySummary(LocalDate date, int totalGoals, int doneCount) {
+        public DaySummary(LocalDate date, int totalGoals, int doneCount, String dayOfWeek) {
             this.date = date;
+            this.dayOfWeek = dayOfWeek;
             this.totalGoals = totalGoals;
             this.doneCount = doneCount;
         }
 
         public LocalDate getDate() { return date; }
+        public String getDayOfWeek() { return dayOfWeek;}
         public int getTotalGoals() { return totalGoals; }
         public int getDoneCount() { return doneCount; }
     }
