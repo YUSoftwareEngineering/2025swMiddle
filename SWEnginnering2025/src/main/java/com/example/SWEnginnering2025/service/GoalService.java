@@ -13,7 +13,6 @@ import com.example.SWEnginnering2025.domain.GoalStatus;
 @Service // "나 서비스야!" 라고 명찰 달기
 @RequiredArgsConstructor // Repository를 자동으로 연결해줌
 public class GoalService {
-
     private final GoalRepository goalRepository;
 
     private Goal findGoalById(Long id) {
