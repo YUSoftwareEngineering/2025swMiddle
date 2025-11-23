@@ -9,7 +9,7 @@ import java.time.LocalTime;
 
 @Getter
 @NoArgsConstructor
-public class DailyGoalRequest {
+public class CreateGoalRequest {
 
     @NotBlank(message = "제목은 필수입니다.") // 제목 빈칸 방지!
     private String title;

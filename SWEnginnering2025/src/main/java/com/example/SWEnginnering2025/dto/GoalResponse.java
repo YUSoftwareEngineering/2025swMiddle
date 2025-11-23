@@ -11,7 +11,7 @@ import java.time.LocalTime;
 @Getter
 @Builder
 @AllArgsConstructor
-public class DailyGoalResponse {
+public class GoalResponse {
     private Long id;
     private String title;
     private String description;
@@ -22,8 +22,8 @@ public class DailyGoalResponse {
     private LocalDateTime createdAt;
 
     // Entity -> DTO 변환기 (공장)
-    public static DailyGoalResponse from(Goal entity) {
-        return DailyGoalResponse.builder()
+    public static GoalResponse from(Goal entity) {
+        return GoalResponse.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())

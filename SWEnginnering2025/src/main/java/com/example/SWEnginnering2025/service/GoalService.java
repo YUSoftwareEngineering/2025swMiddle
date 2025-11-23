@@ -1,8 +1,8 @@
 package com.example.SWEnginnering2025.service;
 
 import com.example.SWEnginnering2025.domain.Goal;
-import com.example.SWEnginnering2025.dto.DailyGoalRequest;
-import com.example.SWEnginnering2025.dto.DailyGoalResponse;
+import com.example.SWEnginnering2025.dto.CreateGoalRequest;
+import com.example.SWEnginnering2025.dto.GoalResponse;
 import com.example.SWEnginnering2025.repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class GoalService {
 
     // 1. 목표 생성
     @Transactional
-    public DailyGoalResponse createGoal(DailyGoalRequest request) {
+    public GoalResponse createGoal(CreateGoalRequest request) {
         // 상자(DTO)에서 꺼내서 진짜 데이터(Entity)로 변환
         Goal goal = Goal.builder()
                 .title(request.getTitle())
@@ -32,18 +32,18 @@ public class GoalService {
         Goal savedGoal = goalRepository.save(goal);
 
         // 결과 상자(DTO)로 포장해서 반환
-        return DailyGoalResponse.from(savedGoal);
+        return GoalResponse.from(savedGoal);
     }
     // 2. 목표 수정
     @Transactional
-    public DailyGoalResponse updateGoal(Long id, DailyGoalRequest request) {
+    public GoalResponse updateGoal(Long id, CreateGoalRequest request) {
         Goal goal = goalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
         // 내용 수정 (더티 체킹: 저장(save) 안 불러도 알아서 DB가 바뀜)
         goal.update(request.getTitle(), request.getDescription(), request.getTargetDate(),
                 request.getCategory(), request.isNotificationEnabled(), request.getScheduledTime());
 
-        return DailyGoalResponse.from(goal);
+        return GoalResponse.from(goal);
     }
 
     // 3. 목표 삭제

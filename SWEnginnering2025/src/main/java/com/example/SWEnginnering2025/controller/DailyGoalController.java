@@ -1,7 +1,7 @@
 package com.example.SWEnginnering2025.controller;
 
-import com.example.SWEnginnering2025.dto.DailyGoalRequest;
-import com.example.SWEnginnering2025.dto.DailyGoalResponse;
+import com.example.SWEnginnering2025.dto.CreateGoalRequest;
+import com.example.SWEnginnering2025.dto.GoalResponse;
 import com.example.SWEnginnering2025.service.GoalService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +17,15 @@ public class DailyGoalController {
 
     // 1. 목표 생성 (POST)
     @PostMapping
-    public ResponseEntity<DailyGoalResponse> createGoal(@RequestBody @Valid DailyGoalRequest request) { // @Valid 추가
-        DailyGoalResponse response = goalService.createGoal(request);
+    public ResponseEntity<GoalResponse> createGoal(@RequestBody @Valid CreateGoalRequest request) { // @Valid 추가
+        GoalResponse response = goalService.createGoal(request);
         return ResponseEntity.ok(response);
     }
 
     // 2. 목표 수정 (PUT /api/v1/goals/{id})
     @PutMapping("/{id}")
-    public ResponseEntity<DailyGoalResponse> updateGoal(@PathVariable Long id, @RequestBody @Valid DailyGoalRequest request) { // @Valid 추가
-        DailyGoalResponse response = goalService.updateGoal(id, request);
+    public ResponseEntity<GoalResponse> updateGoal(@PathVariable Long id, @RequestBody @Valid CreateGoalRequest request) { // @Valid 추가
+        GoalResponse response = goalService.updateGoal(id, request);
         return ResponseEntity.ok(response);
     }
 
