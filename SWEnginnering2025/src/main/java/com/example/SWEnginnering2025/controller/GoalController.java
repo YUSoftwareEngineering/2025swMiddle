@@ -1,9 +1,9 @@
 package com.example.SWEnginnering2025.controller;
 
 import com.example.SWEnginnering2025.dto.CreateGoalRequest;
+import com.example.SWEnginnering2025.dto.GoalBulkUpdateRequest;
 import com.example.SWEnginnering2025.dto.GoalResponse;
 import com.example.SWEnginnering2025.dto.GoalStatusRequest;
-import com.example.SWEnginnering2025.service.GoalService;
 import com.example.SWEnginnering2025.service.GoalService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController // "나는 컨트롤러야, JSON으로 대답할게"
 @RequestMapping("/api/v1/goals") // "주소는 이걸로 시작해"
 @RequiredArgsConstructor
-public class DailyGoalController {
+public class GoalController {
 
     private final GoalService goalService;
 
@@ -46,5 +46,12 @@ public class DailyGoalController {
 
         GoalResponse response = goalService.updateStatus(id, request);
         return ResponseEntity.ok(response);
+    }
+
+    // 5. 목표 일괄 상태 변경 (PATCH)
+    @PatchMapping("/status/bulk")
+    public ResponseEntity<Void> updateStatusBulk(@RequestBody GoalBulkUpdateRequest request) {
+        goalService.updateStatusBulk(request);
+        return ResponseEntity.ok().build();
     }
 }

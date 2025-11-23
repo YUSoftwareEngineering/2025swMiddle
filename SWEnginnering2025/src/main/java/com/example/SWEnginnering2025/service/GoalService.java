@@ -2,6 +2,7 @@ package com.example.SWEnginnering2025.service;
 
 import com.example.SWEnginnering2025.domain.Goal;
 import com.example.SWEnginnering2025.dto.CreateGoalRequest;
+import com.example.SWEnginnering2025.dto.GoalBulkUpdateRequest;
 import com.example.SWEnginnering2025.dto.GoalResponse;
 import com.example.SWEnginnering2025.dto.GoalStatusRequest;
 import com.example.SWEnginnering2025.repository.GoalRepository;
@@ -77,6 +78,19 @@ public class GoalService {
         Goal goal = findGoalById(id);
         goal.changeStatus(request.getStatus(), request.getStatusMemo(), request.getProofUrl());
         return GoalResponse.from(goal);
+    }
+
+    // 5. 목표 일괄 상태 변경 (Bulk Update)
+    @Transactional
+    public void updateStatusBulk(GoalBulkUpdateRequest request) {
+        // 반복문(for-each)으로 하나씩 꺼내서 처리
+        for (Long id : request.getIds()) {
+            // [정답] 아까 만든 도우미 메서드 활용!
+            Goal goal = findGoalById(id);
+
+            // 일괄 처리는 보통 메모/사진 없이 상태만 바꿈 (null 전달)
+            goal.changeStatus(request.getStatus(), null, null);
+        }
     }
 }
 

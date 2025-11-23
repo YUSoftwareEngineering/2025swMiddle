@@ -1,31 +1,24 @@
-### 1. 목표 생성
+### [준비] 목표 2개 만들기
 POST http://localhost:8080/api/v1/goals
 Content-Type: application/json
 
 {
-  "title": "오운완 인증하기",
-  "description": "헬스장 거울샷 찍기",
-  "targetDate": "2025-11-23",
-  "category": "EXERCISE",
-  "isNotificationEnabled": false
+  "title": "목표 1번", "targetDate": "2025-11-25", "category": "ETC"
 }
 
-### 2. 파일 업로드 (증빙 자료)
-POST http://localhost:8080/api/v1/attachments/upload
-Content-Type: multipart/form-data; boundary=MyBoundary
-
---MyBoundary
-Content-Disposition: form-data; name="file"; filename="gym_photo.txt"
-
-(이것은 헬스장 거울 앞에서 찍은 사진 파일 데이터입니다...)
---MyBoundary--
-
-### 3. 인증샷 첨부해서 완료 처리하기
-PATCH http://localhost:8080/api/v1/goals/1/status
+###
+POST http://localhost:8080/api/v1/goals
 Content-Type: application/json
 
 {
-  "status": "COMPLETED",
-  "statusMemo": "오늘 하체 조졌다...",
-  "proofUrl": "C:\\Users\\이채민\\sbb\\.idea\\httpClient\\11-23\\2. 파일 업로드 (증빙 자료)\\2025-11-23T175637.txt"
+  "title": "목표 2번", "targetDate": "2025-11-25", "category": "ETC"
+}
+
+### [테스트] 1번, 2번 목표를 한 방에 '완료'로 바꾸기!
+PATCH http://localhost:8080/api/v1/goals/status/bulk
+Content-Type: application/json
+
+{
+  "ids": [1, 2],
+  "status": "COMPLETED"
 }
