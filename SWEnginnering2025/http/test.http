@@ -3,10 +3,10 @@ POST http://localhost:8080/api/v1/goals
 Content-Type: application/json
 
 {
-  "title": "매일 크로키 한 장 하기",
-  "description": "그림을 열심히 그리자!",
+  "title": "매일 코딩 테스트 1문제 풀기",
+  "description": "백준 마스터가 되자!",
   "targetDate": "2025-11-25",
-  "category": "HOBBY",
+  "category": "STUDY",
   "isNotificationEnabled": true,
   "scheduledTime": "09:00:00"
 }
@@ -42,7 +42,7 @@ PATCH http://localhost:8080/api/v1/goals/1/status
 Content-Type: application/json
 
 {
-  "status": "PARTIAL",
+  "status": "PARTIAL_SUCCESS",
   "statusMemo": "문제는 풀었는데 시간 초과됨 ㅠㅠ",
   "proofUrl": "https://example.com/my_code_screenshot.jpg"
 }
