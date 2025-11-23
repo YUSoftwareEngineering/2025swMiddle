@@ -1,12 +1,12 @@
-### [1. 생성] 정상적인 목표 생성 (200 OK)
+### 1. 생성 정상적인 목표 생성
 POST http://localhost:8080/api/v1/goals
 Content-Type: application/json
 
 {
-  "title": "매일 코딩 테스트 1문제 풀기",
-  "description": "백엔드 마스터를 향하여!",
+  "title": "매일 크로키 한 장 하기",
+  "description": "그림을 열심히 그리자!",
   "targetDate": "2025-11-25",
-  "category": "STUDY",
+  "category": "HOBBY",
   "isNotificationEnabled": true,
   "scheduledTime": "09:00:00"
 }
@@ -36,7 +36,7 @@ Content-Type: application/json
   "scheduledTime": "10:00:00"
 }
 
-### [4. 상태 변경] '부분 달성' 및 인증샷/메모 기록 (200 OK)
+### 4. 상태 변경 부분 달성 및 인증샷 메모 기록
 // ID 1번을 '부분 달성' 상태로 바꾸고 메모를 남깁니다.
 PATCH http://localhost:8080/api/v1/goals/1/status
 Content-Type: application/json
@@ -47,10 +47,10 @@ Content-Type: application/json
   "proofUrl": "https://example.com/my_code_screenshot.jpg"
 }
 
-### [5. 삭제] 목표 삭제 (200 OK)
+### 5. 삭제 목표 삭제
 DELETE http://localhost:8080/api/v1/goals/1
 
-### [테스트] 상태를 'COMPLETED'로 변경하기
+### 상태를 COMPLETED로 변경하기
 //우리가 코드로 안 쓴 'COMPLETED'가 진짜 들어가는지 확인해봅시다.
 PATCH http://localhost:8080/api/v1/goals/1/status
 Content-Type: application/json

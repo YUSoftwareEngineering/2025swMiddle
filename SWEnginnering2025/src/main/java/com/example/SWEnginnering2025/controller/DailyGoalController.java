@@ -2,6 +2,8 @@ package com.example.SWEnginnering2025.controller;
 
 import com.example.SWEnginnering2025.dto.CreateGoalRequest;
 import com.example.SWEnginnering2025.dto.GoalResponse;
+import com.example.SWEnginnering2025.dto.GoalStatusRequest;
+import com.example.SWEnginnering2025.service.GoalService;
 import com.example.SWEnginnering2025.service.GoalService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +36,15 @@ public class DailyGoalController {
     public ResponseEntity<Void> deleteGoal(@PathVariable Long id) {
         goalService.deleteGoal(id);
         return ResponseEntity.ok().build();
+    }
+
+    // 4. 목표 상태 변경 (PATCH)
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<GoalResponse> updateStatus(
+            @PathVariable Long id,
+            @RequestBody GoalStatusRequest request) {
+
+        GoalResponse response = goalService.updateStatus(id, request);
+        return ResponseEntity.ok(response);
     }
 }
