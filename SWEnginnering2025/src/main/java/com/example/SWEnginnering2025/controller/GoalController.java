@@ -1,10 +1,13 @@
 package com.example.SWEnginnering2025.controller;
 
+import com.example.SWEnginnering2025.domain.Goal;
+import com.example.SWEnginnering2025.domain.GoalStatus;
 import com.example.SWEnginnering2025.dto.CreateGoalRequest;
 import com.example.SWEnginnering2025.dto.GoalBulkUpdateRequest;
 import com.example.SWEnginnering2025.dto.GoalResponse;
 import com.example.SWEnginnering2025.dto.GoalStatusRequest;
 import com.example.SWEnginnering2025.service.GoalService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -53,5 +56,13 @@ public class GoalController {
     public ResponseEntity<Void> updateStatusBulk(@RequestBody GoalBulkUpdateRequest request) {
         goalService.updateStatusBulk(request);
         return ResponseEntity.ok().build();
+    }
+
+    @Transactional
+    public void markGoalAsFailed(Long goalId){
+        Goal goal = findGoalById(goalId);
+
+        // GoalStatus enum 안에 FAILED 있는지 확인해야 함
+        goal.changeStatus(GoalStatus.FAILED, "FailureLogService 자동 기록", null);
     }
 }
