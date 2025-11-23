@@ -57,12 +57,4 @@ public class GoalController {
         goalService.updateStatusBulk(request);
         return ResponseEntity.ok().build();
     }
-
-    @Transactional
-    public void markGoalAsFailed(Long goalId){
-        Goal goal = findGoalById(goalId);
-
-        // GoalStatus enum 안에 FAILED 있는지 확인해야 함
-        goal.changeStatus(GoalStatus.FAILED, "FailureLogService 자동 기록", null);
-    }
 }
