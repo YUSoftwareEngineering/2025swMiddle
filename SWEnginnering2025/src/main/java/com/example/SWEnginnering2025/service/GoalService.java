@@ -3,6 +3,7 @@ package com.example.SWEnginnering2025.service;
 import com.example.SWEnginnering2025.domain.Goal;
 import com.example.SWEnginnering2025.dto.CreateGoalRequest;
 import com.example.SWEnginnering2025.dto.GoalResponse;
+import com.example.SWEnginnering2025.dto.GoalStatusRequest;
 import com.example.SWEnginnering2025.repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class GoalService {
 
     private final GoalRepository goalRepository;
+
+    private Goal findGoalById(Long id) {
+        return goalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
+    }
 
     // 1. 목표 생성
     @Transactional
@@ -37,8 +43,7 @@ public class GoalService {
     // 2. 목표 수정
     @Transactional
     public GoalResponse updateGoal(Long id, CreateGoalRequest request) {
-        Goal goal = goalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
+        Goal goal = findGoalById(id);
         // 내용 수정 (더티 체킹: 저장(save) 안 불러도 알아서 DB가 바뀜)
         goal.update(request.getTitle(), request.getDescription(), request.getTargetDate(),
                 request.getCategory(), request.isNotificationEnabled(), request.getScheduledTime());
@@ -48,11 +53,20 @@ public class GoalService {
 
     // 3. 목표 삭제
     @Transactional
-    public GoalResponse updateStatus(Long id, CreateGoalRequest request) {
-        Goal goal = GoalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
-        // 바뀐 메서드 호출!
+    public void deleteGoal(Long id) {
+        // 1. DB에서 목표 찾기 (없으면 에러)
+        Goal goal = findGoalById(id);
+        // 2. 삭제하기
+        goalRepository.delete(goal);
+    }
+
+    // 4. 목표 상태 변경
+    @Transactional
+    public GoalResponse updateStatus(Long id, GoalStatusRequest request) {
+
+        Goal goal = findGoalById(id);
         goal.changeStatus(request.getStatus(), request.getStatusMemo(), request.getProofUrl());
         return GoalResponse.from(goal);
     }
 }
+
