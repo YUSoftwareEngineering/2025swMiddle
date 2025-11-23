@@ -1,62 +1,31 @@
-### 1. 생성 정상적인 목표 생성
+### 1. 목표 생성
 POST http://localhost:8080/api/v1/goals
 Content-Type: application/json
 
 {
-  "title": "매일 코딩 테스트 1문제 풀기",
-  "description": "백준 마스터가 되자!",
-  "targetDate": "2025-11-25",
-  "category": "STUDY",
-  "isNotificationEnabled": true,
-  "scheduledTime": "09:00:00"
+  "title": "오운완 인증하기",
+  "description": "헬스장 거울샷 찍기",
+  "targetDate": "2025-11-23",
+  "category": "EXERCISE",
+  "isNotificationEnabled": false
 }
 
-### [2. 생성 실패] 제목 없이 생성 시도 (400 Bad Request)
-POST http://localhost:8080/api/v1/goals
-Content-Type: application/json
+### 2. 파일 업로드 (증빙 자료)
+POST http://localhost:8080/api/v1/attachments/upload
+Content-Type: multipart/form-data; boundary=MyBoundary
 
-{
-  "title": "",
-  "description": "제목이 없어서 실패해야 함",
-  "targetDate": "2025-11-25",
-  "category": "ETC"
-}
+--MyBoundary
+Content-Disposition: form-data; name="file"; filename="gym_photo.txt"
 
-### [3. 수정] 목표 내용 변경 (200 OK)
-// ID 1번의 시간을 09:00 -> 10:00으로 변경하고, 알림을 끕니다.
-PUT http://localhost:8080/api/v1/goals/1
-Content-Type: application/json
+(이것은 헬스장 거울 앞에서 찍은 사진 파일 데이터입니다...)
+--MyBoundary--
 
-{
-  "title": "매일 코딩 테스트 1문제 풀기",
-  "description": "시간이 없어서 1시간 미룸",
-  "targetDate": "2025-11-25",
-  "category": "STUDY",
-  "isNotificationEnabled": false,
-  "scheduledTime": "10:00:00"
-}
-
-### 4. 상태 변경 부분 달성 및 인증샷 메모 기록
-// ID 1번을 '부분 달성' 상태로 바꾸고 메모를 남깁니다.
-PATCH http://localhost:8080/api/v1/goals/1/status
-Content-Type: application/json
-
-{
-  "status": "PARTIAL_SUCCESS",
-  "statusMemo": "문제는 풀었는데 시간 초과됨 ㅠㅠ",
-  "proofUrl": "https://example.com/my_code_screenshot.jpg"
-}
-
-### 5. 삭제 목표 삭제
-DELETE http://localhost:8080/api/v1/goals/1
-
-### 상태를 COMPLETED로 변경하기
-//우리가 코드로 안 쓴 'COMPLETED'가 진짜 들어가는지 확인해봅시다.
+### 3. 인증샷 첨부해서 완료 처리하기
 PATCH http://localhost:8080/api/v1/goals/1/status
 Content-Type: application/json
 
 {
   "status": "COMPLETED",
-  "statusMemo": "회색 글씨여도 잘 들어갑니다!",
-  "proofUrl": "https://example.com/done.jpg"
+  "statusMemo": "오늘 하체 조졌다...",
+  "proofUrl": "C:\\Users\\이채민\\sbb\\.idea\\httpClient\\11-23\\2. 파일 업로드 (증빙 자료)\\2025-11-23T175637.txt"
 }
