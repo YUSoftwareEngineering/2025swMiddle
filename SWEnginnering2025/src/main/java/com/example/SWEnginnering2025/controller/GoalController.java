@@ -1,17 +1,17 @@
 package com.example.SWEnginnering2025.controller;
 
-import com.example.SWEnginnering2025.domain.Goal;
-import com.example.SWEnginnering2025.domain.GoalStatus;
+import com.example.SWEnginnering2025.domain.AchievementColor;
 import com.example.SWEnginnering2025.dto.CreateGoalRequest;
 import com.example.SWEnginnering2025.dto.GoalBulkUpdateRequest;
 import com.example.SWEnginnering2025.dto.GoalResponse;
 import com.example.SWEnginnering2025.dto.GoalStatusRequest;
 import com.example.SWEnginnering2025.service.GoalService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController // "나는 컨트롤러야, JSON으로 대답할게"
 @RequestMapping("/api/v1/goals") // "주소는 이걸로 시작해"
@@ -56,5 +56,12 @@ public class GoalController {
     public ResponseEntity<Void> updateStatusBulk(@RequestBody GoalBulkUpdateRequest request) {
         goalService.updateStatusBulk(request);
         return ResponseEntity.ok().build();
+    }
+
+    // 7. 날짜별 성과 색상 조회 (GET /api/v1/goals/achievement?date=2025-11-25)
+    @GetMapping("/achievement")
+    public ResponseEntity<AchievementColor> getAchievementColor(@RequestParam LocalDate date) {
+        AchievementColor color = goalService.getAchievementColor(date);
+        return ResponseEntity.ok(color);
     }
 }

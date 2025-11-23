@@ -1,5 +1,6 @@
 package com.example.SWEnginnering2025.service;
 
+import com.example.SWEnginnering2025.domain.AchievementColor;
 import com.example.SWEnginnering2025.domain.Goal;
 import com.example.SWEnginnering2025.domain.GoalStatus;
 import com.example.SWEnginnering2025.dto.CreateGoalRequest;
@@ -13,16 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Service // "나 서비스야!" 라고 명찰 달기
 @RequiredArgsConstructor // Repository를 자동으로 연결해줌
 public class GoalService {
 
     private final GoalRepository goalRepository;
-
-    private Goal findGoalById(Long id) {
-        return goalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
-    }
 
     // 1. 목표 생성
     @Transactional
@@ -98,6 +97,37 @@ public class GoalService {
 
         // GoalStatus enum 안에 FAILED 있는지 확인해야 함
         goal.changeStatus(GoalStatus.FAILED, "FailureLogService 자동 기록", null);
+    }
+
+    private Goal findGoalById(Long id) {
+        return goalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
+    }
+
+    // 7. [신규] 특정 날짜의 성과 색상 조회
+    @Transactional(readOnly = true) // 조회만 하니까 readOnly (성능 최적화)
+    public AchievementColor getAchievementColor(LocalDate date) {
+        // 1. 해당 날짜의 모든 목표 가져오기 (임시 유저ID 1L)
+        List<Goal> goals = goalRepository.findAllByUserIdAndTargetDate(1L, date);
+
+        // 2. 목표가 하나도 없으면 -> 회색 (GREY)
+        if (goals.isEmpty()) {
+            return AchievementColor.GREY;
+        }
+
+        // 3. 완료된 개수 세기
+        long completedCount = goals.stream()
+                .filter(goal -> goal.getStatus() == GoalStatus.COMPLETED)
+                .count();
+
+        // 4. 색상 판별 로직
+        if (completedCount == goals.size()) {
+            return AchievementColor.BLUE;   // 전부 완료 -> 파랑
+        } else if (completedCount == 0) {
+            return AchievementColor.RED;    // 하나도 안 함 -> 빨강
+        } else {
+            return AchievementColor.YELLOW; // 섞여 있음 -> 노랑
+        }
     }
 }
 
