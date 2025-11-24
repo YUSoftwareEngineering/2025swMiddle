@@ -1,17 +1,16 @@
-/*
-    Project: GoalStatus.java
-    Author: CES
-	Date of creation: 2025.11.23
-	Date of last update: 2025.11.23
-*/
+
+/*Project: AttachmentController.java
+        Author: 이채민
+        Date of creation: 2025.11.23
+        Date of last update: 2025.11.23
+                */
 
 package com.example.SWEnginnering2025.model;
 
-// enum은 정해진 몇 개의 값만 쓸 수 있게 묶어 둔 타입
-
-public enum GoalStatus { // 해당 목표의 상태를 나타내는 상태값들
-    NOT_STARTED,   // 아직 시작 안함
-    PARTIAL,       // 일부만 수행
-    DONE,         //완료
-    FAILED       // 실패
+public enum GoalStatus {
+    PENDING,          // 아직 안 한 상태
+    IN_PROGRESS,      // 진행 중 (필요하면)
+    PARTIAL_SUCCESS,  // 부분 달성
+    COMPLETED,        // 완료
+    FAILED
 }

@@ -1,6 +1,6 @@
 /*
     Project: User.java
-    Author: YHW
+    Author: 윤혜원
 	Date of creation: 2025.11.21
 	Date of last update: 2025.11.22
 */

@@ -1,6 +1,6 @@
 /*
     Project: DailyCalendarDto.java
-    Author: CES
+    Author: 최은샘
 	Date of creation: 2025.11.23
 	Date of last update: 2025.11.23
 */
