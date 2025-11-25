@@ -68,6 +68,12 @@ public class GoalController {
         goalService.updateStatusBulk(request);
         return ResponseEntity.ok().build();
     }
+    //6. 목표 실패 처리
+    @PostMapping("/{id}/fail")
+    public ResponseEntity<Void> markGoalAsFailed(@PathVariable Long id) {
+        goalService.markGoalAsFailed(id);
+        return ResponseEntity.ok().build();
+    }
 
     // 7. 날짜별 성과 색상 조회 (GET /api/v1/goals/achievement?date=2025-11-25)
     @GetMapping("/achievement")
