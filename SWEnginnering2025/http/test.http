@@ -1,4 +1,4 @@
-### [1단계] 목표 1번 만들기
+### [준비] 목표 2개 만들기
 POST http://localhost:8080/api/v1/goals
 Content-Type: application/json
 
@@ -31,5 +31,5 @@ Content-Type: application/json
   "status": "COMPLETED"
 }
 
-### 1번 목표 강제 실패 처리
+### [팀원 기능 테스트] 1번 목표 강제 실패 처리
 POST http://localhost:8080/api/v1/goals/1/fail

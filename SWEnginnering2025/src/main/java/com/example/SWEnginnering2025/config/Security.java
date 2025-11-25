@@ -3,7 +3,7 @@
     Project: Security.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.26
+    Date of last update: 2025.11.23
 */
 
 
@@ -89,7 +89,7 @@ public class Security {
     */
 
 
-// 혼자 테스트 하기 위해 바꿈 (수정됨: H2 접속 및 API 테스트 허용)
+// 혼자 테스트 하기 위해 바꿈
 @Configuration
 @EnableWebSecurity
 public class Security {
@@ -97,21 +97,9 @@ public class Security {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF 설정 (H2 콘솔 접속을 위해 예외 처리 필요)
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**") // H2 콘솔은 CSRF 검사 제외
-                        .disable() // 나머지는 비활성화
-                )
 
-                // H2 콘솔 화면이 깨지지 않도록 설정
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin())
-                )
-
-                // 권한 설정
+                .csrf(csrf -> csrf.disable())// API 통신을 위해 CSRF 임시 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        // H2 콘솔과 내 API(/api/...)는 무조건 허용
-                        .requestMatchers("/h2-console/**", "/api/**").permitAll()
                         .anyRequest().permitAll()
                 );
 
