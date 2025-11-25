@@ -2,7 +2,7 @@
     Project: UserRepository.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.25
+    Date of last update: 2025.11.23
 */
 
 package com.example.SWEnginnering2025.repository;
@@ -27,9 +27,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 닉네임(name) 중복 확인
     boolean existsByName(String name);
-
-    // 로그인 ID(userId) 중복 확인
-    boolean existsByUserId(String userId);
 
     // OAuth2 사용자 조회
     Optional<User> findByProviderAndProviderId(String provider, String providerId);

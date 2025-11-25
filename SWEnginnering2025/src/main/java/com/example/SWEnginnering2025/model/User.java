@@ -2,19 +2,13 @@
     Project: User.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.25
+    Date of last update: 2025.11.23
 */
 
 package com.example.SWEnginnering2025.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor // 예비용
-@Builder // 예비용
 @Entity
 @Table(name = "userTBL")
 public class User {
@@ -48,4 +42,30 @@ public class User {
     private String provider;      // "google", "kakao" 등 (null 허용)
     @Column
     private String providerId;    // OAuth2 제공자 고유 ID (null 허용)
+
+    public User() {}
+
+    // Getter/Setter
+    public Long getId() { return id; }
+
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public String getBirth() { return birth; }
+    public void setBirth(String birth) { this.birth = birth; }
+
+    public String getProvider() { return provider; }
+    public void setProvider(String provider) { this.provider = provider; }
+
+    public String getProviderId() { return providerId; }
+    public void setProviderId(String providerId) { this.providerId = providerId; }
 }
