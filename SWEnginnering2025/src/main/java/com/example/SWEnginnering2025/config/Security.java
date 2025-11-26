@@ -97,9 +97,16 @@ public class Security {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-
-                .csrf(csrf -> csrf.disable())// API 통신을 위해 CSRF 임시 비활성화
+                // H2 콘솔 쓸 거니까 CSRF 비활성화 + frameOptions sameOrigin
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**")
+                        .disable()
+                )
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin())
+                )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**", "/api/**").permitAll()
                         .anyRequest().permitAll()
                 );
 
@@ -111,7 +118,4 @@ public class Security {
         return new BCryptPasswordEncoder();
     }
 }
-
-
-
 
