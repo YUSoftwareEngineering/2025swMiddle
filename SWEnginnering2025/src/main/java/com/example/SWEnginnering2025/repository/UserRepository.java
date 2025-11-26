@@ -1,15 +1,8 @@
 /*
     Project: UserRepository.java
-<<<<<<< HEAD
     Author: 윤혜원
 	Date of creation: 2025.11.21
 	Date of last update: 2025.11.22
-	- 중복 확인 추가
-=======
-    Author: YHW
-    Date of creation: 2025.11.21
-    Date of last update: 2025.11.23
->>>>>>> origin/YHW
 */
 
 package com.example.SWEnginnering2025.repository;
