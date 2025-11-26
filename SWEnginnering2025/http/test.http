@@ -27,9 +27,17 @@ PATCH http://localhost:8080/api/v1/goals/status/bulk
 Content-Type: application/json
 
 {
-  "ids": [4, 5],
+  "ids": [1, 2],
   "status": "COMPLETED"
 }
 
 ### [팀원 기능 테스트] 1번 목표 강제 실패 처리
 POST http://localhost:8080/api/v1/goals/1/fail
+
+
+
+GET http://localhost:8080/api/v1/calendar/daily?userId=1&date=2025-11-25
+
+GET http://localhost:8080/api/v1/calendar/weekly?userId=1&date=2025-11-25
+
+GET http://localhost:8080/api/v1/calendar/monthly?userId=1&date=2025-11-25
