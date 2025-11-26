@@ -26,39 +26,43 @@ repositories {
 
 dependencies {
 
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation ("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-
-	compileOnly("org.projectlombok:lombok")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	implementation("org.projectlombok:lombok")
-
+	// JWT
 	implementation("io.jsonwebtoken:jjwt-api:0.12.5")
 	implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+	// Bean Validation
+	implementation ("org.springframework.boot:spring-boot-starter-validation")
 
-
+	// Lombok
+	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testAnnotationProcessor("org.projectlombok:lombok")
+	implementation("org.projectlombok:lombok")
 
-	runtimeOnly("com.h2database:h2") // 일단 혼자 테스트용으로 H2 메모리 DB사용
+	// 개발 편의
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+
+	// DB 드라이버: H2 또는 MySQL 중 택 1
+
+	// 1) 로컬 메모리 H2 사용할 때
+	//runtimeOnly("com.h2database:h2")
+
+	// 2) MySQL(RDS 포함) 사용할 때
 	runtimeOnly("com.mysql:mysql-connector-j")
 
-	// runtimeOnly("com.mysql:mysql-connector-j")
-
-
+    // 테스트
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	// �쑀�슚�꽦 寃��궗 (�엯�젰媛� 泥댄겕) [cite: 1484]
-	implementation ("org.springframework.boot:spring-boot-starter-validation")
-	// H2 �뜲�씠�꽣踰좎씠�뒪 (�룄而� ���떊 濡쒖뺄 �뀒�뒪�듃�슜)
+
 
 }
 

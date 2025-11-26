@@ -2,7 +2,7 @@
     Project: AuthController.java
     Author: YHW
     Date of creation: 2025.11.22
-    Date of last update: 2025.11.23
+    Date of last update: 2025.11.25
 */
 
 package com.example.SWEnginnering2025.controller;
@@ -90,6 +90,17 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ACCOUNT_NOT_FOUND");
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("소셜 로그인 실패");
+        }
+    }
+
+    // --- pw 재설정 ---
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetConfirmRequest request) {
+        try {
+            authService.resetPassword(request.getToken(), request.getNewPassword());
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
