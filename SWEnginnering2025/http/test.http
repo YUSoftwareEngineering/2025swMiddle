@@ -1,0 +1,35 @@
+### [준비] 목표 2개 만들기
+POST http://localhost:8080/api/v1/goals
+Content-Type: application/json
+
+{
+  "title": "목표 1번",
+  "description": "첫 번째 목표입니다.",
+  "targetDate": "2025-11-25",
+  "category": "ETC",
+  "isNotificationEnabled": false
+}
+
+### [2단계] 목표 2번 만들기
+POST http://localhost:8080/api/v1/goals
+Content-Type: application/json
+
+{
+  "title": "목표 2번",
+  "description": "두 번째 목표입니다.",
+  "targetDate": "2025-11-25",
+  "category": "ETC",
+  "isNotificationEnabled": false
+}
+
+### [3단계]1번, 2번 목표를 한 방에 완료로 변경
+PATCH http://localhost:8080/api/v1/goals/status/bulk
+Content-Type: application/json
+
+{
+  "ids": [4, 5],
+  "status": "COMPLETED"
+}
+
+### [팀원 기능 테스트] 1번 목표 강제 실패 처리
+POST http://localhost:8080/api/v1/goals/1/fail

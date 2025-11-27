@@ -1,0 +1,26 @@
+// Status: 200, time: 428ms, size: 208 B
+### HTTP Request ▏#1
+POST http://localhost:8080/api/v1/goals HTTP/1.1
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+content-type: application/json
+date: Mon, 24 Nov 2025 15:21:37 GMT
+expires: 0
+pragma: no-cache
+transfer-encoding: chunked
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 0
+
+{
+  "id": 4,
+  "title": "목표 1번",
+  "description": null,
+  "status": "PENDING",
+  "statusMemo": null,
+  "proofUrl": null,
+  "category": "ETC",
+  "scheduledTime": null,
+  "createdAt": "2025-11-25T00:21:37.78007",
+  "notificationEnabled": false
+}
+>> C:\Users\이채민\2025sw\.idea\httpClient\11-25\HTTP Request ▏#1\2025-11-25T002137.json

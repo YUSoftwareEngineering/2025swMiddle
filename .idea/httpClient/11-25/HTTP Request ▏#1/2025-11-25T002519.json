@@ -1,0 +1,12 @@
+{
+  "id": 4,
+  "title": "목표 1번",
+  "description": null,
+  "status": "PENDING",
+  "statusMemo": null,
+  "proofUrl": null,
+  "category": "ETC",
+  "scheduledTime": null,
+  "createdAt": "2025-11-25T00:25:19.5561054",
+  "notificationEnabled": false
+}
