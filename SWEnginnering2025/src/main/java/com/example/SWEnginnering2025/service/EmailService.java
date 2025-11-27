@@ -38,4 +38,15 @@ public class EmailService {
 
         sendEmail(userEmail, subject, text);
     }
+
+    // 아이디 찾기 이메일 전송
+    public void sendUserIdReminderEmail(String userEmail, String userId) {
+        String subject = "[Self-Management] 회원 아이디(ID) 안내";
+
+        String text = "요청하신 회원님의 로그인 아이디(ID)는 다음과 같습니다:\n\n"
+                + "로그인 ID: " + userId
+                + "\n\n이 아이디를 사용하여 로그인해 주세요. 감사합니다.";
+
+        sendEmail(userEmail, subject, text);
+    }
 }
