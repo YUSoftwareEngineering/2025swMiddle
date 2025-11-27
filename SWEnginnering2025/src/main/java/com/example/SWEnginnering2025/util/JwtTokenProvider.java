@@ -2,8 +2,9 @@
     Project: JwtTokenProvider.java : Jwt 토큰 생성, 유효성 검사, 정보 추출
     Author: YHW
     Date of creation: 2025.11.23
-    Date of last update: 2025.11.23
+    Date of last update: 2025.11.27 - 오류 개선
 */
+
 
 package com.example.SWEnginnering2025.util;
 
@@ -11,10 +12,12 @@ import com.example.SWEnginnering2025.dto.AllJwtTokenAndNickDto;
 import com.example.SWEnginnering2025.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,12 +35,16 @@ public class JwtTokenProvider {
     private long refreshTokenExpirationMs;
 
     public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey) {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        // Base64 인코딩된 문자열을 디코딩하여 바이트 배열로 변환
+        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
+        // 디코딩된 바이트를 사용하여 key 생성
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Access Token 생성
+    // access token 생성
     public String generateAccessToken(Long userId) {
         Date now = new Date();
+        // 토큰 만료 시각 = 현재 시각 + 유효 기간
         Date expiryDate = new Date(now.getTime() + accessTokenExpirationMs);
 
         Map<String, Object> claims = new HashMap<>();
@@ -45,13 +52,13 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setIssuedAt(now) // 토큰 발급 시각
+                .setExpiration(expiryDate) // 토큰 만료 시각
+                .signWith(key, SignatureAlgorithm.HS256) // 서명에 사용하는 키, 알골
                 .compact();
     }
 
-    // Refresh Token 생성
+    // refresh token 생성
     public String generateRefreshToken() {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
@@ -63,7 +70,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // 두 토큰을 묶어 DTO 반환
+    // access+ refresh token 묶어서 dto로 반환
     public AllJwtTokenAndNickDto createAllJwtToken(User user) {
         String accessToken = generateAccessToken(user.getId());
         String refreshToken = generateRefreshToken();
@@ -76,12 +83,12 @@ public class JwtTokenProvider {
         );
     }
 
-    // 토큰에서 사용자 ID 추출
+    // get user id
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJws(token)
+                .parseClaimsJws(token) // 토큰 파싱, 서명 검증
                 .getBody();
         return claims.get("userId", Long.class);
     }
@@ -89,20 +96,23 @@ public class JwtTokenProvider {
     // 토큰 유효성 검사
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(key).build().parseClaimsJws(authToken);
+            Jwts.parser()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(authToken);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+        } catch (SecurityException | MalformedJwtException e) {
             // 잘못된 JWT 서명
-            System.out.println("Invalid JWT signature");
+            System.out.println("Invalid JWT signature: " + e.getMessage());
         } catch (ExpiredJwtException e) {
             // 만료된 JWT 토큰
-            System.out.println("Expired JWT token");
+            System.out.println("Expired JWT token: " + e.getMessage());
         } catch (UnsupportedJwtException e) {
             // 지원되지 않는 JWT 토큰
-            System.out.println("Unsupported JWT token");
+            System.out.println("Unsupported JWT token: " + e.getMessage());
         } catch (IllegalArgumentException e) {
             // JWT 클레임 문자열이 비어 있음
-            System.out.println("JWT claims string is empty.");
+            System.out.println("JWT claims string is empty: " + e.getMessage());
         }
         return false;
     }
