@@ -10,6 +10,9 @@ package com.example.SWEnginnering2025.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -48,4 +51,17 @@ public class User {
     private String provider;      // "google", "kakao" 등 (null 허용)
     @Column
     private String providerId;    // OAuth2 제공자 고유 ID (null 허용)
+
+    @Column(nullable = false)
+    private boolean isNotificationEnabled = true;
+
+    // [신규 추가 2] 친구 요청 정책 (기본값: ALL)
+    @Enumerated(EnumType.STRING)
+    private FriendRequestPolicy friendRequestPolicy = FriendRequestPolicy.ALL;
+
+    // [신규 추가 3] 설정 변경 메서드
+    public void updateSettings(boolean isNotificationEnabled, FriendRequestPolicy policy) {
+        this.isNotificationEnabled = isNotificationEnabled;
+        this.friendRequestPolicy = policy;
+    }
 }
