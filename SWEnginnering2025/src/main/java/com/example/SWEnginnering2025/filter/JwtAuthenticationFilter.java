@@ -2,10 +2,11 @@
     Project: JwtAuthenticationFilter.java
     Author: YHW
     Date of creation: 2025.11.26
-    Date of last update: 2025.11.28-디버그 코드 추가
+    Date of last update: 2025.11.27-디버그 코드 추가
 */
 
 package com.example.SWEnginnering2025.filter;
+
 import com.example.SWEnginnering2025.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
