@@ -18,14 +18,10 @@ export function AuthScreen({ onLogin }: { onLogin: (user: User) => void }) {
     confirmPassword: '',
   });
 
-  // 🔥 비밀번호 재설정 모달 상태
   const [resetModalOpen, setResetModalOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
 
-  // ========================
-  // 🔹 로그인
-  // ========================
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -42,9 +38,6 @@ export function AuthScreen({ onLogin }: { onLogin: (user: User) => void }) {
     }
   };
 
-  // ========================
-  // 🔹 회원가입
-  // ========================
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (signupForm.password !== signupForm.confirmPassword) {
@@ -74,9 +67,6 @@ export function AuthScreen({ onLogin }: { onLogin: (user: User) => void }) {
     }
   };
 
-  // ========================
-  // 🔹 비밀번호 재설정
-  // ========================
   const handlePasswordReset = async () => {
     if (!resetEmail) return alert("이메일 입력 필요");
 
@@ -93,9 +83,6 @@ export function AuthScreen({ onLogin }: { onLogin: (user: User) => void }) {
     }
   };
 
-  // ========================
-  // UI
-  // ========================
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-cyan-50 to-emerald-50 px-4">
       <Card className="w-full max-w-md">
@@ -116,7 +103,6 @@ export function AuthScreen({ onLogin }: { onLogin: (user: User) => void }) {
               <TabsTrigger value="signup">회원가입</TabsTrigger>
             </TabsList>
 
-            {/* ======================== 로그인 ======================== */}
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
@@ -144,8 +130,7 @@ export function AuthScreen({ onLogin }: { onLogin: (user: User) => void }) {
                 <Button type="submit" className="w-full">
                   로그인
                 </Button>
-
-                {/* 🔥 비밀번호 찾기 버튼 */}
+]
                 <Button
                   type="button"
                   variant="link"
@@ -156,8 +141,7 @@ export function AuthScreen({ onLogin }: { onLogin: (user: User) => void }) {
                 </Button>
               </form>
             </TabsContent>
-
-            {/* ======================== 회원가입 ======================== */}
+]
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="space-y-2">
@@ -215,7 +199,6 @@ export function AuthScreen({ onLogin }: { onLogin: (user: User) => void }) {
         </CardContent>
       </Card>
 
-      {/* ======================== 비밀번호 재설정 모달 ======================== */}
       {resetModalOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-80 shadow-lg">
