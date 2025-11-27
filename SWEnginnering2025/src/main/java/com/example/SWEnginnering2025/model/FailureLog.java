@@ -25,13 +25,11 @@ public class FailureLog {
 
     private Long goalId;
 
-    @Column(name = "reason_tag")
-    private String reasonTag;
+    // 실패가 발생한 날짜 (캘린더/분석용)
+    private LocalDate failedDate;
 
     @Column(columnDefinition = "TEXT")
     private String memo;
-    // 실패가 발생한 날짜 (캘린더/분석용)
-    private LocalDate failedDate;
 
     @Column(nullable = false)
     private LocalDateTime failedAt;

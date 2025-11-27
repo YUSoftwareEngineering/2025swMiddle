@@ -1,9 +1,8 @@
-/*
-    Project: AttachmentController.java
-    Author: 이채민, 한지윤
-    Date of creation: 2025.11.22
-    Date of last update: 2025.11.30
-*/
+/*Project: AttachmentController.java
+        Author: 이채민, 한지윤
+        Date of creation: 2025.11.22
+        Date of last update: 2025.11.24
+                */
 
 package com.example.SWEnginnering2025.controller;
 
@@ -14,14 +13,16 @@ import com.example.SWEnginnering2025.dto.GoalResponse;
 import com.example.SWEnginnering2025.dto.GoalStatusRequest;
 import com.example.SWEnginnering2025.service.GoalService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
 
-@RestController
-@RequestMapping("/api/v1/goals")
+@RestController // "나는 컨트롤러야, JSON으로 대답할게"
+@RequestMapping("/api/v1/goals") // "주소는 이걸로 시작해"
+
 public class GoalController {
 
     private final GoalService goalService;
@@ -32,16 +33,14 @@ public class GoalController {
 
     // 1. 목표 생성 (POST)
     @PostMapping
-    public ResponseEntity<GoalResponse> createGoal(@RequestBody @Valid CreateGoalRequest request) {
-        // [수정] 서비스가 userId를 필요로 하므로, 임시 ID 1L을 같이 넘겨줍니다.
-        Long userId = 1L;
-        GoalResponse response = goalService.createGoal(userId, request);
+    public ResponseEntity<GoalResponse> createGoal(@RequestBody @Valid CreateGoalRequest request) { // @Valid 추가
+        GoalResponse response = goalService.createGoal(request);
         return ResponseEntity.ok(response);
     }
 
     // 2. 목표 수정 (PUT /api/v1/goals/{id})
     @PutMapping("/{id}")
-    public ResponseEntity<GoalResponse> updateGoal(@PathVariable Long id, @RequestBody @Valid CreateGoalRequest request) {
+    public ResponseEntity<GoalResponse> updateGoal(@PathVariable Long id, @RequestBody @Valid CreateGoalRequest request) { // @Valid 추가
         GoalResponse response = goalService.updateGoal(id, request);
         return ResponseEntity.ok(response);
     }
@@ -69,20 +68,17 @@ public class GoalController {
         goalService.updateStatusBulk(request);
         return ResponseEntity.ok().build();
     }
-
-    // 6. 목표 실패 처리 (POST)
+    //6. 목표 실패 처리
     @PostMapping("/{id}/fail")
     public ResponseEntity<Void> markGoalAsFailed(@PathVariable Long id) {
         goalService.markGoalAsFailed(id);
         return ResponseEntity.ok().build();
     }
 
-    // 7. 날짜별 성과 색상 조회 (GET)
+    // 7. 날짜별 성과 색상 조회 (GET /api/v1/goals/achievement?date=2025-11-25)
     @GetMapping("/achievement")
     public ResponseEntity<AchievementColor> getAchievementColor(@RequestParam LocalDate date) {
-        // [수정] 여기도 userId(1L)를 같이 넘겨줘야 합니다.
-        Long userId = 1L;
-        AchievementColor color = goalService.getAchievementColor(userId, date);
+        AchievementColor color = goalService.getAchievementColor(date);
         return ResponseEntity.ok(color);
     }
 }
