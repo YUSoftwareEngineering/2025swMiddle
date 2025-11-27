@@ -2,7 +2,7 @@
     Project: AuthService.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.25
+    Date of last update: 2025.11.26 - 탈퇴 기능
 */
 
 package com.example.SWEnginnering2025.service;
@@ -121,7 +121,7 @@ public class AuthService {
 
     // 로그아웃
 
-    // 1. 로그아웃 전 pw확인
+    // 로그아웃 전 pw확인
     public void reauthenticate(Long userId, String password) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
@@ -131,6 +131,21 @@ public class AuthService {
         }
     }
 
+    // 계정 탈퇴
+    @Transactional
+    public void deleteUser(Long userId, String password) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
+        // pw 확인
+        if (!verifyPassword(password, user.getPassword())) {
+            throw new RuntimeException("PASSWORD_MISMATCH");
+        }
+        // 관련 토큰 삭제
+        tokenRepository.deleteByUserId(userId);
+
+        // 관련 데이터 삭제
+        userRepository.delete(user);
+    }
 
     // 비밀번호 유효성 검사
     private void validatePassword(String password, String passwordConfirm) {
@@ -171,6 +186,15 @@ public class AuthService {
     // 소셜 ID로 사용자 조회
     private Optional<User> findBySocialId(String provider, String socialId) {
         return userRepository.findByProviderAndProviderId(provider, socialId);
+    }
+
+    // 이메일 주소로 사용자 ID를 찾아 이메일로 전송
+    public void findUserIdByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                // 해당 이메일로 가입된 사용자가 없으면 예외 처리
+                .orElseThrow(() -> new IllegalArgumentException("FIND_FAILED: 해당 이메일로 가입된 사용자가 없습니다."));
+        // 사용자 ID를 포함한 이메일 전송
+        emailService.sendUserIdReminderEmail(user.getEmail(), user.getUserId());
     }
 
     // pw 재설정 요청 처리 => 이메일 발송

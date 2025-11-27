@@ -2,7 +2,7 @@
     Project: AuthController.java
     Author: YHW
     Date of creation: 2025.11.22
-    Date of last update: 2025.11.25
+    Date of last update: 2025.11.26 - 탈퇴 기능
 */
 
 package com.example.SWEnginnering2025.controller;
@@ -11,6 +11,7 @@ import com.example.SWEnginnering2025.dto.*;
 import com.example.SWEnginnering2025.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -93,7 +94,32 @@ public class AuthController {
         }
     }
 
-    // --- pw 재설정 ---
+    // --- id/pw 찾기 ---
+    // 1. 아이디 찾기: 이메일로 ID를 찾아 메일 발송
+    @PostMapping("/find-userid")
+    public ResponseEntity<String> findUserId(@RequestBody PasswordResetRequest request) {
+        try {
+            // 이메일 송수신
+            authService.findUserIdByEmail(request.getEmail());
+            // 메세지 반환
+            return ResponseEntity.ok("가입된 이메일로 아이디 정보를 전송했습니다.");
+        } catch (IllegalArgumentException e) {
+            // 사용자를 찾지 못한 경우 (FIND_FAILED) 404 Not Found 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    // 2. 비밀번호 재설정 요청 (메일 발송)
+    @PostMapping("/request-reset-password")
+    public ResponseEntity<String> requestPasswordReset(@RequestBody PasswordResetRequest request) {
+        try {
+            authService.createPasswordResetToken(request.getEmail());
+            return ResponseEntity.ok("비밀번호 재설정 링크가 이메일로 전송되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+    // 3. pw 재설정 확인: 토큰 검사, db update
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody PasswordResetConfirmRequest request) {
         try {
@@ -104,13 +130,11 @@ public class AuthController {
         }
     }
 
-    // --- 로그아웃 ---
+    // --- 로그아웃, 탈퇴 ---
 
     // 1. 로그아웃 전 비밀번호 재인증
     @PostMapping("/reauthenticate")
-    public ResponseEntity<String> reauthenticate(@RequestBody ReAuthRequest request) {
-        Long userId = 1L; // (실제로는 토큰에서 userId를 추출해야 함)
-
+    public ResponseEntity<String> reauthenticate(@AuthenticationPrincipal Long userId, @RequestBody ReAuthRequest request) {
         try {
             authService.reauthenticate(userId, request.getPassword());
             return ResponseEntity.ok("REAUTH_SUCCESS");
@@ -126,5 +150,17 @@ public class AuthController {
 
         // 로그아웃이 성공한다면 사용자는 어플의 기능을 이용할 수 없다. (클라이언트 측 토큰 삭제)
         return ResponseEntity.ok("로그아웃 성공. 서버와의 연결을 끊습니다.");
+    }
+
+    // 탈퇴 처리
+    @PostMapping("/withdraw")
+    public ResponseEntity<String> withdrawUser(@AuthenticationPrincipal Long userId, @RequestBody ReAuthRequest request) {
+        try {
+            authService.deleteUser(userId, request.getPassword());
+            return ResponseEntity.ok("회원 탈퇴가 성공적으로 완료되었습니다. 서버와의 연결을 종료합니다.");
+        } catch (RuntimeException e) {
+            // pw 불일치 등 오류 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원 탈퇴 실패: " + e.getMessage());
+        }
     }
 }
