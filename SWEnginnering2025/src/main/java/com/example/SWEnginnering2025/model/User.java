@@ -52,14 +52,17 @@ public class User {
     @Column
     private String providerId;    // OAuth2 제공자 고유 ID (null 허용)
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean isNotificationEnabled = true;
 
     // [신규 추가 2] 친구 요청 정책 (기본값: ALL)
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private FriendRequestPolicy friendRequestPolicy = FriendRequestPolicy.ALL;
 
     // [신규 추가 3] 설정 변경 메서드
+
     public void updateSettings(boolean isNotificationEnabled, FriendRequestPolicy policy) {
         this.isNotificationEnabled = isNotificationEnabled;
         this.friendRequestPolicy = policy;
