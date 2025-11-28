@@ -146,93 +146,158 @@ public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자
 
     // 1. 목표 생성
     @Transactional
-    public GoalResponse createGoal(CreateGoalRequest request) {
-        // 중복 체크 로직
+    public GoalResponse createGoal(Long userId, CreateGoalRequest request) {
+
+        // 1) 중복 체크
         boolean isDuplicate = goalRepository.existsByUserIdAndTargetDateAndTitle(
-                1L, request.getTargetDate(), request.getTitle());
+                userId, request.getTargetDate(), request.getTitle()
+        );
 
         if (isDuplicate) {
-            //409 Conflict 에러
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 유사한 목표가 있습니다.");
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "이미 유사한 목표가 있습니다."
+            );
         }
-        // 상자(DTO)에서 꺼내서 진짜 데이터(Entity)로 변환
-        Goal goal = Goal.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .targetDate(request.getTargetDate())
-                .category(request.getCategory())
-                .isNotificationEnabled(request.isNotificationEnabled())
-                .scheduledTime(request.getScheduledTime())
-                .userId(1L) // 임시 유저 ID
-                .build();
 
-        // 저장
-        Goal savedGoal = goalRepository.save(goal);
+        // 2) 엔티티 생성 (생성자에서 기본 필드 세팅)
+        Goal goal = new Goal(
+                userId,
+                request.getTitle(),
+                request.getDescription(),
+                request.getTargetDate(),
+                request.getCategory(),
+                request.isNotificationEnabled(),  // false 고정 말고 요청 값 사용
+                request.getScheduledTime()
+        );
 
-        // 결과 상자(DTO)로 포장해서 반환
-        return GoalResponse.from(savedGoal);
+        // 3) 기본 상태 PENDING
+        goal.setStatus(GoalStatus.PENDING);
+
+        // 4) 저장
+        goalRepository.save(goal);
+
+        // 5) DTO로 변환해서 반환
+        return GoalResponse.from(goal);
     }
-    // 2. 목표 수정
+
+    /**
+     * 2. 목표 수정
+     */
     @Transactional
     public GoalResponse updateGoal(Long id, CreateGoalRequest request) {
         Goal goal = findGoalById(id);
-        // 내용 수정 (더티 체킹: 저장(save) 안 불러도 알아서 DB가 바뀜)
-        goal.update(request.getTitle(), request.getDescription(), request.getTargetDate(),
-                request.getCategory(), request.isNotificationEnabled(), request.getScheduledTime());
+
+        goal.update(
+                request.getTitle(),
+                request.getDescription(),
+                request.getCategory(),
+                request.getTargetDate(),
+                request.isNotificationEnabled(),
+                request.getScheduledTime()
+        );
 
         return GoalResponse.from(goal);
     }
 
-    // 3. 목표 삭제
+    /**
+     * 3. 목표 삭제
+     */
     @Transactional
     public void deleteGoal(Long id) {
-        // 1. DB에서 목표 찾기 (없으면 에러)
         Goal goal = findGoalById(id);
-        // 2. 삭제하기
         goalRepository.delete(goal);
     }
 
-    // 4. 목표 상태 변경
+    /**
+     * 4. 단일 목표 상태 변경 (실패 메모/인증샷 포함)
+     */
     @Transactional
-    public GoalResponse updateStatus(Long id, GoalStatusRequest request) {
+    public GoalResponse updateStatus(Long goalId, GoalStatusRequest request) {
 
-        Goal goal = findGoalById(id);
-        goal.changeStatus(request.getStatus(), request.getStatusMemo(), request.getProofUrl());
+        // 1) 엔티티 조회
+        Goal goal = goalRepository.findById(goalId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 목표입니다: " + goalId));
+
+        // 2) 엔티티의 도메인 메서드로 상태 변경 처리
+        goal.changeStatus(
+                request.getStatus(),
+                request.getStatusMemo(),
+                request.getProofUrl()
+        );
+
+        // 3) 변경감지(dirty checking)로 DB 자동 반영
+
+        // 4) 변경된 Goal을 응답 DTO로 변환해서 반환
         return GoalResponse.from(goal);
     }
-    // 목표 일괄 상태 변경 (Bulk Update)
+
+
+    /**
+     * 5. 목표 일괄 상태 변경 (Bulk Update)
+     *    - 메모, 인증샷 없이 상태만 변경
+     */
     @Transactional
     public void updateStatusBulk(GoalBulkUpdateRequest request) {
-        // 반복문(for-each)으로 하나씩 꺼내서 처리
         for (Long id : request.getIds()) {
-            Goal goal = findGoalById(id); // 아까 만든 도우미 메서드 재사용!
-
-            // 일괄 처리는 보통 메모/사진 없이 상태만 바꿈 (null 전달)
+            Goal goal = findGoalById(id);
             goal.changeStatus(request.getStatus(), null, null);
         }
     }
-    // 5. 실패 기록 (Goal 상태를 FAILED로 변경)
-    @Transactional
-    public void markGoalAsFailed(Long goalId){
-        Goal goal = findGoalById(goalId);
 
-        // GoalStatus enum 안에 FAILED 있는지 확인해야 함
+    /**
+     * 6. 실패 기록용 – Goal을 FAILED로 표시
+     *    (FailureLogService에서 호출하는 용도)
+     */
+    @Transactional
+    public void markGoalAsFailed(Long goalId) {
+        Goal goal = findGoalById(goalId);
         goal.changeStatus(GoalStatus.FAILED, "FailureLogService 자동 기록", null);
     }
 
+    /**
+     * 내부 공통 – ID로 Goal 찾기
+     */
     private Goal findGoalById(Long id) {
         return goalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 목표가 없습니다. ID=" + id));
     }
 
-    // 7. [신규] 특정 날짜의 성과 색상 조회
+    /**
+     * 7. 특정 날짜의 성과 색상 조회 (파랑/노랑/빨강/회색)
+     */
     @Transactional(readOnly = true)
     public AchievementColor getAchievementColor(LocalDate date) {
-        // 1. 해당 날짜의 모든 목표 가져오기 (임시 유저ID 1L)
-        List<Goal> goals = goalRepository.findAllByUserIdAndTargetDate(1L, date);
+        Long userId = 1L; // 임시 유저 ID (나중에 인증 붙이면 교체)
 
-        // 2. 공통 메서드로 색상 결정
-        return decideAchievementColor(goals);
+        List<Goal> goals = goalRepository.findAllByUserIdAndTargetDate(userId, date);
+
+        if (goals.isEmpty()) {
+            return AchievementColor.GREY;
+        }
+
+        long completedCount = goals.stream()
+                .filter(goal -> goal.getStatus() == GoalStatus.COMPLETED)
+                .count();
+
+        if (completedCount == goals.size()) {
+            return AchievementColor.BLUE;
+        } else if (completedCount == 0) {
+            return AchievementColor.RED;
+        } else {
+            return AchievementColor.YELLOW;
+        }
+    }
+
+    /**
+     * 8. 날짜 범위로 목표 목록 조회 (17번: 주/월 이동용 핵심 메서드)
+     */
+    @Transactional(readOnly = true)
+    public List<GoalResponse> getGoalsByDateRange(Long userId, LocalDate start, LocalDate end) {
+        return goalRepository.findByUserIdAndTargetDateBetween(userId, start, end)
+                .stream()
+                .map(GoalResponse::from)
+                .toList();
     }
 
     // 1) 해당 날짜(또는 리스트)의 완료 개수만 세는 공통 메서드

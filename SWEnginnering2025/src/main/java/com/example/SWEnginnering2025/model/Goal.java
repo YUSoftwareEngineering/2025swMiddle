@@ -54,7 +54,7 @@ public class Goal { // 사용자의 하루 목표 한 개를 나타냄
     private LocalDateTime createdAt; //  생성 시각
     private LocalDateTime updatedAt; // 수정 시각
 
-
+    private boolean notificationEnabled;
 
     @Builder // 빌더 패턴으로 객체 생성을 쉽게 함
     public Goal(Long userId, String title, String description, LocalDate targetDate,
@@ -69,6 +69,7 @@ public class Goal { // 사용자의 하루 목표 한 개를 나타냄
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.status = GoalStatus.PENDING;
+        this.notificationEnabled = false;
     }
 
     // 비즈니스 로직: 목표 수정 기능 (Setter 대신 사용)
@@ -88,7 +89,22 @@ public class Goal { // 사용자의 하루 목표 한 개를 나타냄
         this.status = status;
         this.statusMemo = statusMemo;
         this.proofUrl = proofUrl;
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now(); // 변경 시간 기록 (선택)
+    }
+
+    public void update(String title,
+                       String description,
+                       GoalCategory category,
+                       LocalDate targetDate,
+                       boolean notificationEnabled,
+                       LocalTime scheduledTime) {
+
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.targetDate = targetDate;
+        this.notificationEnabled = notificationEnabled;
+        this.scheduledTime = scheduledTime;
     }
 
     // ---- getter / setter ----

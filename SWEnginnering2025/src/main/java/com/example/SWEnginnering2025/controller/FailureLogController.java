@@ -34,14 +34,22 @@ public class FailureLogController {
 
     // 시퀀스: createFailureTag(CreateTagRequest)
     @PostMapping("/tags")
-    public ResponseEntity<FailureTagDto> createTag(@RequestBody CreateTagRequest request) {
-        return ResponseEntity.ok(failureLogService.createFailureTag(request));
+    public ResponseEntity<FailureTagDto> createTag(
+            @RequestParam Long userId,
+            @RequestBody CreateTagRequest request) {
+
+        FailureTagDto response = failureLogService.createFailureTag(userId, request);
+        return ResponseEntity.ok(response);
     }
 
     // 시퀀스: logFailure(LogFailureRequest)
-    @PostMapping("/log")
-    public ResponseEntity<FailureLogResponse> logFailure(@RequestBody LogFailureRequest request) {
-        FailureLogResponse response = failureLogService.logFailure(request);
+    @PostMapping
+    public ResponseEntity<FailureLogResponse> logFailure(
+            @RequestParam Long userId,
+            @RequestBody LogFailureRequest request) {
+
+        FailureLogResponse response = failureLogService.logFailure(userId, request);
         return ResponseEntity.ok(response);
     }
+
 }

@@ -7,6 +7,9 @@
 package com.example.SWEnginnering2025.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,11 +18,14 @@ import java.util.Set;
 
 @Entity
 @Table(name = "failure_log")
+@NoArgsConstructor // 매개변수 없는 생성자
+@Setter
+@Getter // get함수 자동 생성
 public class FailureLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long failureId;
+    private Long Logid;
 
     private Long userId;
 
@@ -31,6 +37,8 @@ public class FailureLog {
     @Column(columnDefinition = "TEXT")
     private String memo;
 
+    private LocalDateTime createdAt;
+
     @Column(nullable = false)
     private LocalDateTime failedAt;
 
@@ -41,9 +49,6 @@ public class FailureLog {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<FailureTag> tags = new HashSet<>();
-
-    protected FailureLog() {
-    }
 
     public FailureLog(Long userId,
                       Long goalId,
@@ -59,33 +64,5 @@ public class FailureLog {
 
     public void addTag(FailureTag tag) {
         this.tags.add(tag);
-    }
-
-    public Long getFailureId() {
-        return failureId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public Long getGoalId() {
-        return goalId;
-    }
-
-    public LocalDate getFailedDate() {
-        return failedDate;
-    }
-
-    public String getMemo() {
-        return memo;
-    }
-
-    public LocalDateTime getFailedAt() {
-        return failedAt;
-    }
-
-    public Set<FailureTag> getTags() {
-        return tags;
     }
 }

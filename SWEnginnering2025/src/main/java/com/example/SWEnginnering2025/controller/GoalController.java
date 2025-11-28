@@ -22,7 +22,6 @@ import java.time.LocalDate;
 
 @RestController // "나는 컨트롤러야, JSON으로 대답할게"
 @RequestMapping("/api/v1/goals") // "주소는 이걸로 시작해"
-
 public class GoalController {
 
     private final GoalService goalService;
@@ -33,8 +32,11 @@ public class GoalController {
 
     // 1. 목표 생성 (POST)
     @PostMapping
-    public ResponseEntity<GoalResponse> createGoal(@RequestBody @Valid CreateGoalRequest request) { // @Valid 추가
-        GoalResponse response = goalService.createGoal(request);
+    public ResponseEntity<GoalResponse> createGoal(
+            @RequestParam Long userId,
+            @RequestBody @Valid CreateGoalRequest request) {
+
+        GoalResponse response = goalService.createGoal(userId, request);
         return ResponseEntity.ok(response);
     }
 

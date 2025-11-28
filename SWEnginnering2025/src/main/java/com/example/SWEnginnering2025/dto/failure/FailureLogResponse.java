@@ -5,61 +5,37 @@
                 */
 package com.example.SWEnginnering2025.dto.failure;
 
+import com.example.SWEnginnering2025.model.FailureLog;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class FailureLogResponse {
 
-    private Long failureId;
-    private Long userId;
+    private Long id;
     private Long goalId;
-    private LocalDate date;
     private String memo;
-    private LocalDateTime failedAt;
     private List<FailureTagDto> tags;
+    private LocalDateTime createdAt;
 
-    public FailureLogResponse(Long failureId,
-                              Long userId,
-                              Long goalId,
-                              LocalDate date,
-                              String memo,
-                              LocalDateTime failedAt,
-                              List<FailureTagDto> tags) {
-        this.failureId = failureId;
-        this.userId = userId;
-        this.goalId = goalId;
-        this.date = date;
-        this.memo = memo;
-        this.failedAt = failedAt;
-        this.tags = tags;
-    }
-
-    public Long getFailureId() {
-        return failureId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public Long getGoalId() {
-        return goalId;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public String getMemo() {
-        return memo;
-    }
-
-    public LocalDateTime getFailedAt() {
-        return failedAt;
-    }
-
-    public List<FailureTagDto> getTags() {
-        return tags;
+    public static FailureLogResponse from(FailureLog log) {
+        return new FailureLogResponse(
+                log.getLogid(),
+                log.getGoalId(),
+                log.getMemo(),
+                log.getTags().stream()
+                        .map(FailureTagDto::from)
+                        .collect(Collectors.toList()),
+                log.getCreatedAt()
+        );
     }
 }
