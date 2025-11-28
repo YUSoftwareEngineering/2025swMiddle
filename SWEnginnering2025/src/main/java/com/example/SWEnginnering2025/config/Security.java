@@ -2,7 +2,7 @@
     Project: Security.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.28 - jwt 처리 구현
+    Date of last update: 2025.11.28 - jwt 처리 구현 (이채민 설정 추가)
 */
 
 package com.example.SWEnginnering2025.config;
@@ -62,6 +62,15 @@ public class Security {
                                 "/api/v1/auth/find-userid",
                                 "/api/v1/auth/request-reset-password",
                                 "/api/v1/auth/reset-password",
+
+                                "/h2-console/**",
+                                "/api/v1/coaching/**", // AI 코칭 API 허용
+                                "/api/user/settings",  // 사용자 설정 API 허용
+                                "/api/user/app-info", // 앱 정보 API 허용
+                                "/api/calendar/**",    // 캘린더 API 허용
+                                "/api/failures/**",    // 실패 기록 API 허용
+                                "/api/coaching/**",
+
                                 "/login",
                                 "/oauth2/**",
                                 "/error"
