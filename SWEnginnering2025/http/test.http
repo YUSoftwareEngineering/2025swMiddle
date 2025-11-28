@@ -1,1 +1,2 @@
-POST http://localhost:8080/api/notifications/send/1?message=안녕하세요!
+### [AI 코칭] 1번 유저에게 맞춤 조언 요청하기
+POST http://localhost:8080/api/coaching/advice/1
