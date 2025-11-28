@@ -16,12 +16,14 @@ import java.util.List;
 public class CoachingService {
 
     private final FailureLogRepository failureLogRepository;
-    private final CoachingLogRepository coachingLogRepository; // 조언 저장용 Repo
-    private final OpenAiService openAiService; // ChatGPT 연결 서비스
+    private final CoachingLogRepository coachingLogRepository;
+
+    // [수정 1] OpenAiService 삭제 -> GeminiService 추가
+    private final GeminiService geminiService;
 
     @Transactional
     public String generatePersonalizedAdvice(Long userId) {
-        // 1. [데이터 수집] 사용자의 실패 기록 분석
+        // 1. [데이터 수집]
         List<FailureLog> logs = failureLogRepository.findAllByUserId(userId);
         List<String> topTags = failureLogRepository.findTopFailureTags(userId);
         List<GoalCategory> topCategories = failureLogRepository.findMostFailedCategory(userId);
@@ -30,12 +32,22 @@ public class CoachingService {
             return "아직 충분한 활동 데이터가 없습니다. 목표를 세우고 실천해 보세요!";
         }
 
-        // 주요 실패 원인과 취약 카테고리 추출
-        String mainReason = topTags.isEmpty() ? "알 수 없음" : topTags.get(0);
-        GoalCategory topCategory = topCategories.isEmpty() ? null : topCategories.get(0);
-        String weakCategory = (topCategory == null) ? "전반적인" : topCategory.toString();
+        // [안전하게 값 꺼내기]
+        String mainReason = "알 수 없음";
+        if (!topTags.isEmpty() && topTags.get(0) != null) {
+            mainReason = topTags.get(0);
+        }
 
-        // 2. [프롬프트 작성] AI에게 보낼 지령서
+        String weakCategory = "전반적인";
+        GoalCategory topCategory = null;
+        if (!topCategories.isEmpty()) {
+            topCategory = topCategories.get(0);
+            if (topCategory != null) {
+                weakCategory = topCategory.toString();
+            }
+        }
+
+        // 2. [프롬프트 작성]
         String prompt = String.format(
                 "사용자가 '%s' 활동에서 주로 실패하고 있습니다. " +
                         "주된 실패 원인은 '%s'입니다. " +
@@ -44,12 +56,15 @@ public class CoachingService {
                 weakCategory, mainReason
         );
 
-        // 3. [AI 호출] ChatGPT에게 물어보기
-        String aiAdvice = openAiService.chat(prompt);
+        // 3. [수정 2] Gemini에게 물어보기!
+        String aiAdvice = geminiService.chat(prompt);
 
-        // 4. [저장] 조언 내용 DB에 기록
-        // (CoachingLog 엔티티가 필요합니다)
-        GoalCategory recommendedCategory = topCategories.isEmpty() ? GoalCategory.ETC : topCategories.get(0);
+        // 4. [저장]
+        GoalCategory recommendedCategory = GoalCategory.ETC;
+        if (topCategory != null) {
+            recommendedCategory = topCategory;
+        }
+
         coachingLogRepository.save(new CoachingLog(userId, aiAdvice, recommendedCategory));
 
         return aiAdvice;
