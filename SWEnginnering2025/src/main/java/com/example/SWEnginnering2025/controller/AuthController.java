@@ -2,7 +2,7 @@
     Project: AuthController.java
     Author: YHW
     Date of creation: 2025.11.22
-    Date of last update: 2025.11.26-탈퇴기능
+    Date of last update: 2025.11.27 - withdraw 엔드포인트 추가, jwt 적용
 */
 
 package com.example.SWEnginnering2025.controller;
@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -130,6 +130,18 @@ public class AuthController {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok("로그아웃 성공.");
     }
+
+    // --- 비번 ---
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody EmailRequest request) {
+        try {
+            authService.createPasswordResetToken(request.getEmail());
+            return ResponseEntity.ok("비밀번호 재설정 링크가 이메일로 전송되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
     // --- 회원 탈퇴 ---
     @PostMapping("/withdraw")

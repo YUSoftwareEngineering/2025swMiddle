@@ -1,2 +1,8 @@
-### [AI 코칭] 1번 유저에게 맞춤 조언 요청하기
-POST http://localhost:8080/api/coaching/advice/1
+### [설정 변경 테스트] 알림 켜기(1)
+PATCH http://localhost:8080/api/user/settings
+Content-Type: application/json
+
+{
+  "notificationEnabled": 1,
+  "friendRequestPolicy": "ALL"
+}
