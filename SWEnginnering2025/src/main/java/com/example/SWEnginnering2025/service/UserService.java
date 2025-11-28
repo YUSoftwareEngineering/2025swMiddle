@@ -1,3 +1,10 @@
+/*
+    Project: UserService 환경설정-업데이트/설정변경
+    Author: 이채민
+    Date of creation: 2025.11.27
+    Date of last update: 2025.11.28
+*/
+
 package com.example.SWEnginnering2025.service;
 
 import com.example.SWEnginnering2025.dto.AppSettingsRequest;
