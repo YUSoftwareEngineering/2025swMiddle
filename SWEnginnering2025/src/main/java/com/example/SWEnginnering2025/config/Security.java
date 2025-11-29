@@ -65,7 +65,8 @@ public class Security {
                                 "/api/auth/reset-password",
                                 "/login",
                                 "/oauth2/**",
-                                "/error"
+                                "/error",
+                                "/api/auth/forgot-password"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/auth/reauthenticate",

@@ -131,6 +131,18 @@ public class AuthController {
         return ResponseEntity.ok("로그아웃 성공.");
     }
 
+    // --- 비번 ---
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody EmailRequest request) {
+        try {
+            authService.createPasswordResetToken(request.getEmail());
+            return ResponseEntity.ok("비밀번호 재설정 링크가 이메일로 전송되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
     // --- 회원 탈퇴 ---
     @PostMapping("/withdraw")
     public ResponseEntity<String> withdrawUser(@RequestBody WithdrawRequest request) {
