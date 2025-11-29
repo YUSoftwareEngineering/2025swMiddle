@@ -2,7 +2,7 @@
     Project: JwtAuthenticationFilter.java
     Author: YHW
     Date of creation: 2025.11.26
-    Date of last update: 2025.11.27-디버그 코드 추가
+    Date of last update: 2025.11.29
 */
 
 package com.example.SWEnginnering2025.filter;
@@ -36,6 +36,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         System.out.println("--- [DEBUG] JWT Filter Start: " + request.getRequestURI() + " ---");
 
+        // JWT 검사를 건너뛸 URL
+        String path = request.getServletPath();
+        if (path.equals("/") || path.equals("/index.html") || path.equals("/register.html") ||
+                path.startsWith("/js/") || path.startsWith("/css/") || path.startsWith("/images/") ||
+                path.startsWith("/api/auth/register") || path.startsWith("/api/auth/login")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // 1. HTTP 요청 헤더에서 JWT 토큰 추출
         String token = resolveToken(request);
 
@@ -51,7 +61,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 2. 토큰에서 사용자 ID(Long)를 추출
                 Long userId = jwtTokenProvider.getUserIdFromToken(token);
                 System.out.println("--- [DEBUG] 2. Extracted User ID: " + userId + " ---");
-
 
                 // 3. UserDetailsService를 사용하여 사용자 정보 로드
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userId.toString());
@@ -70,14 +79,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     System.out.println("--- [DEBUG] 4. Authentication SUCCESS! ---");
                 } else {
-                    // userDetails가 null인 경우
                     System.out.println("--- [DEBUG] 3. UserDetails is NULL (User not found in DB) ---");
                     SecurityContextHolder.clearContext();
                 }
             } catch (Exception e) {
-                // 토큰 검증은 통과, but  DB에서 사용자를 찾지 못했거나 기타 예외 발생 시 인증 정보 삭제
                 System.out.println("--- [DEBUG] 5. Authentication FAILED due to Exception (e.g. DB error) ---");
-                e.printStackTrace(); // 어떤 예외인지 확인
+                e.printStackTrace();
                 SecurityContextHolder.clearContext();
             }
         } else if (token != null) {
