@@ -732,4 +732,3 @@ const CalendarPage = () => {
         </div>
     );
 };
-

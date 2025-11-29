@@ -2,7 +2,7 @@
     Project: User.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.25
+    Date of last update: 2025.11.29
 */
 
 package com.example.SWEnginnering2025.model;
@@ -48,4 +48,6 @@ public class User {
     private String provider;      // "google", "kakao" 등 (null 허용)
     @Column
     private String providerId;    // OAuth2 제공자 고유 ID (null 허용)
+    @Column(nullable = false)
+    private boolean isNotificationEnabled = true;
 }

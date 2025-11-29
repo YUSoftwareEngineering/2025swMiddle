@@ -19,7 +19,7 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (form.password !== form.passwordConfirm) {
             setError('비밀번호가 일치하지 않습니다.');
             return;
@@ -37,7 +37,11 @@ const Register = () => {
                 passwordConfirm: form.passwordConfirm,
                 birth: form.birth
             });
-            tokenManager.save(result);
+
+            // 서버에서 JWT 받으면 저장
+            tokenManager.save(result.token);
+
+            // 홈 페이지 이동
             window.location.href = '/home.html';
         } catch (err) {
             if (err.status === 409) {
@@ -75,68 +79,27 @@ const Register = () => {
                 <form className="auth-form" onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>이메일</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            placeholder="example@email.com" 
-                            value={form.email} 
-                            onChange={handleChange} 
-                            required 
-                        />
+                        <input type="email" name="email" placeholder="example@email.com" value={form.email} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
                         <label>사용자명 (ID)</label>
-                        <input 
-                            type="text" 
-                            name="userId" 
-                            placeholder="username123" 
-                            value={form.userId} 
-                            onChange={handleChange} 
-                            required 
-                        />
+                        <input type="text" name="userId" placeholder="username123" value={form.userId} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
                         <label>닉네임</label>
-                        <input 
-                            type="text" 
-                            name="nickname" 
-                            placeholder="표시될 이름" 
-                            value={form.nickname} 
-                            onChange={handleChange} 
-                            required 
-                        />
+                        <input type="text" name="nickname" placeholder="표시될 이름" value={form.nickname} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
                         <label>비밀번호</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            placeholder="" 
-                            value={form.password} 
-                            onChange={handleChange} 
-                            required 
-                        />
+                        <input type="password" name="password" value={form.password} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
                         <label>비밀번호 확인</label>
-                        <input 
-                            type="password" 
-                            name="passwordConfirm" 
-                            placeholder="" 
-                            value={form.passwordConfirm} 
-                            onChange={handleChange} 
-                            required 
-                        />
+                        <input type="password" name="passwordConfirm" value={form.passwordConfirm} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
                         <label>생년월일</label>
-                        <input 
-                            type="date" 
-                            name="birth" 
-                            value={form.birth} 
-                            onChange={handleChange} 
-                            required 
-                        />
+                        <input type="date" name="birth" value={form.birth} onChange={handleChange} required />
                     </div>
                     <button type="submit" className="submit-button" disabled={loading}>
                         {loading ? <><span className="spinner"></span>가입 중...</> : '회원가입'}
@@ -152,3 +115,4 @@ const Register = () => {
     );
 };
 
+window.Register = Register;

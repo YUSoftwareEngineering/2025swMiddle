@@ -132,6 +132,24 @@ body {
     text-align: center;
 }
 
+.success-message {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.auth-description {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
 .forgot-password { text-align: center; margin-top: 16px; }
 .forgot-password a { color: #26a69a; text-decoration: none; font-size: 14px; font-weight: 500; }
 .forgot-password a:hover { text-decoration: underline; }
@@ -183,4 +201,3 @@ body {
     .social-buttons { flex-direction: column; }
     .social-btn { justify-content: center; }
 }
-
