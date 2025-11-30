@@ -22,6 +22,7 @@ import com.example.SWEnginnering2025.dto.CreateGoalRequest;
 import com.example.SWEnginnering2025.dto.GoalBulkUpdateRequest;
 import com.example.SWEnginnering2025.dto.GoalResponse;
 import com.example.SWEnginnering2025.dto.GoalStatusRequest;
+import com.nimbusds.oauth2.sdk.auth.JWTAuthentication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,16 +39,15 @@ import java.time.DayOfWeek; // 기준 날짜에서 월요일을 계산할 때 �
 import java.util.*; // List, Map, ArrayList, Collections, HashMap 등을 쓰기위해 사용
 import java.util.stream.Collectors; // 스트림으로 그룹핑/변환할 때 사용
 
+@RequiredArgsConstructor
 @Service // 이 클래스가 서비스 계층(비즈니스 로직 담당)이라는 것을 스프링에게 알려줌
 @Transactional(readOnly = true) // 이 클래스의 메서드들은 기본적으로 트랜잭션 안에서 실행되고, 읽기 전용
 
 public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자에서 한 번 정해진 뒤로는 절대 바뀌지 않는 GoalRepository 필드를 하나 갖고 있다.
 
     private final GoalRepository goalRepository;
+    private final JWTAuthentication jwtAuthentication;
 
-    public GoalService(GoalRepository goalRepository) {
-        this.goalRepository = goalRepository;
-    }
 
     // 월간 캘린더 조회
     public MonthlyCalendarDto getMonthlyCalendar(Long userId, LocalDate baseDate) {
@@ -146,10 +146,10 @@ public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자
 
     // 1. 목표 생성
     @Transactional
-    public GoalResponse createGoal(CreateGoalRequest request) {
+    public GoalResponse createGoal(Long userId,CreateGoalRequest request) {
         // 중복 체크 로직
         boolean isDuplicate = goalRepository.existsByUserIdAndTargetDateAndTitle(
-                1L, request.getTargetDate(), request.getTitle());
+                userId, request.getTargetDate(), request.getTitle());
 
         if (isDuplicate) {
             //409 Conflict 에러
@@ -163,7 +163,7 @@ public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자
                 .category(request.getCategory())
                 .isNotificationEnabled(request.isNotificationEnabled())
                 .scheduledTime(request.getScheduledTime())
-                .userId(1L) // 임시 유저 ID
+                .userId(userId)
                 .build();
 
         // 저장
@@ -227,9 +227,9 @@ public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자
 
     // 7. [신규] 특정 날짜의 성과 색상 조회
     @Transactional(readOnly = true)
-    public AchievementColor getAchievementColor(LocalDate date) {
-        // 1. 해당 날짜의 모든 목표 가져오기 (임시 유저ID 1L)
-        List<Goal> goals = goalRepository.findAllByUserIdAndTargetDate(1L, date);
+    public AchievementColor getAchievementColor(Long userId,LocalDate date) {
+        // 1. 해당 날짜의 모든 목표 가져오기
+        List<Goal> goals = goalRepository.findAllByUserIdAndTargetDate(userId, date);
 
         // 2. 공통 메서드로 색상 결정
         return decideAchievementColor(goals);
