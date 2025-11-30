@@ -1,0 +1,8 @@
+### [설정 변경 테스트] 알림 켜기(1)
+PATCH http://localhost:8080/api/user/settings
+Content-Type: application/json
+
+{
+  "notificationEnabled": 1,
+  "friendRequestPolicy": "ALL"
+}
