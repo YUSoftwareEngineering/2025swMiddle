@@ -2,9 +2,8 @@
     Project: JwtTokenProvider.java : Jwt 토큰 생성, 유효성 검사, 정보 추출
     Author: YHW
     Date of creation: 2025.11.23
-    Date of last update: 2025.11.27 - 오류 개선
+    Date of last update: 2025.11.30
 */
-
 
 package com.example.SWEnginnering2025.util;
 
@@ -25,20 +24,26 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
-    // 보안키
+    // 보안키 (final)
     private final Key key;
 
-    @Value("${jwt.access-token-expiration-in-ms}")
-    private long accessTokenExpirationMs;
+    // 만료 시간
+    private final long accessTokenExpirationMs;
 
-    @Value("${jwt.refresh-token-expiration-in-ms}")
-    private long refreshTokenExpirationMs;
+    private final long refreshTokenExpirationMs;
 
-    public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey) {
-        // Base64 인코딩된 문자열을 디코딩하여 바이트 배열로 변환
+    public JwtTokenProvider(
+            @Value("${jwt.secret-key}") String secretKey,
+            @Value("${jwt.access-token-expiration-in-ms}") long accessTokenExpirationMs,
+            @Value("${jwt.refresh-token-expiration-in-ms}") long refreshTokenExpirationMs) {
+
+        // 1. Secret Key 설정
         byte[] keyBytes = Base64.getDecoder().decode(secretKey);
-        // 디코딩된 바이트를 사용하여 key 생성
         this.key = Keys.hmacShaKeyFor(keyBytes);
+
+        // 2. 만료 시간 설정
+        this.accessTokenExpirationMs = accessTokenExpirationMs;
+        this.refreshTokenExpirationMs = refreshTokenExpirationMs;
     }
 
     // access token 생성
@@ -59,6 +64,7 @@ public class JwtTokenProvider {
     }
 
     // refresh token 생성
+    // (Refresh Token에 userId를 넣는 것은 보안상 권장되지 않으므로, userId 인수를 제거합니다.)
     public String generateRefreshToken() {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpirationMs);
@@ -72,6 +78,7 @@ public class JwtTokenProvider {
 
     // access+ refresh token 묶어서 dto로 반환
     public AllJwtTokenAndNickDto createAllJwtToken(User user) {
+        // generateAccessToken에는 userId를 전달해야 합니다.
         String accessToken = generateAccessToken(user.getId());
         String refreshToken = generateRefreshToken();
 

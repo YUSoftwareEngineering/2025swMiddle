@@ -2,12 +2,12 @@
     Project: Security.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.29
+    Date of last update: 2025.11.30
 */
-
 package com.example.SWEnginnering2025.config;
 
 import com.example.SWEnginnering2025.filter.JwtAuthenticationFilter;
+import com.example.SWEnginnering2025.handler.OAuth2LoginSuccessHandler;
 import com.example.SWEnginnering2025.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -24,10 +24,12 @@ public class Security {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
-    public Security(CustomOAuth2UserService customOAuth2UserService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public Security(CustomOAuth2UserService customOAuth2UserService, JwtAuthenticationFilter jwtAuthenticationFilter, OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
     }
 
     @Bean
@@ -78,8 +80,8 @@ public class Security {
                 .logout(logout -> logout.disable())
                 .oauth2Login(oauth -> oauth
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .successHandler(oAuth2LoginSuccessHandler)
                 );
         return http.build();
     }
