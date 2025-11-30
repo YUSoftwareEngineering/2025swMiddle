@@ -2,7 +2,7 @@
     Project: FocusSessionService.java
     Author: YHW
     Date of creation: 2025.11.23
-    Date of last update: 2025.11.23
+    Date of last update: 2025.11.30
 */
 
 package com.example.SWEnginnering2025.service;
@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +27,25 @@ public class FocusSessionService {
 
     private final FocusSessionRepository focusSessionRepository;
 
-    private Long getCurrentUserId() {
-        return 1L;
+    // 포커스 세션 목록 조회
+    @Transactional(readOnly = true)
+    public List<FocusSessionResponse> listCompletedSessions(Long userId) {
+
+        // Repository를 통해 완료된 세션 목록을 최신순으로 DB 조회
+        List<FocusSession> sessions = focusSessionRepository.findAllByUserIdAndStatusOrderByEndedAtDesc(
+                userId,
+                SessionStatus.COMPLETED
+        );
+
+        // DTO 리스트로 변환 후 반환
+        return sessions.stream()
+                .map(this::buildListResponse)
+                .collect(Collectors.toList());
     }
 
     // 포커스 세션 시작
     @Transactional
-    public FocusSessionResponse startSession(FocusSessionStartRequest request) {
-        Long userId = getCurrentUserId();
+    public FocusSessionResponse startSession(Long userId, FocusSessionStartRequest request) {
 
         FocusSession session = FocusSession.builder()
                 .userId(userId)
@@ -46,7 +59,7 @@ public class FocusSessionService {
         return buildResponse(savedSession);
     }
 
-    // 포커스 세션 중지/일시정지(PAUSE): 정지 혹은 화면 백그라운드 전환시
+    // 포커스 세션 중지/ 일시정지: 정지 화면 or 백그라운드 전환 시
     @Transactional
     public FocusSessionResponse pauseSession(Long sessionId) {
         FocusSession session = focusSessionRepository.findById(sessionId)
@@ -70,7 +83,7 @@ public class FocusSessionService {
         return buildResponse(focusSessionRepository.save(session));
     }
 
-    //Resume
+    // Resume
     @Transactional
     public FocusSessionResponse resumeSession(Long sessionId) {
         FocusSession session = focusSessionRepository.findById(sessionId)
@@ -124,6 +137,16 @@ public class FocusSessionService {
                 .startTime(session.getStartTime())
                 .totalDurationSeconds(session.getTotalDurationSeconds())
                 .currentElapsedSeconds(currentElapsedSeconds)
+                .build();
+    }
+
+    // 목록 조회용 응답 dto
+    private FocusSessionResponse buildListResponse(FocusSession session) {
+        return FocusSessionResponse.builder()
+                .sessionId(session.getId())
+                .goal(session.getGoal())
+                .status(session.getStatus())
+                .totalDurationSeconds(session.getTotalDurationSeconds())
                 .build();
     }
 }

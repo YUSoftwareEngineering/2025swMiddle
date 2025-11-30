@@ -36,7 +36,7 @@ public class User {
     private String email;
 
     // 비밀번호 (암호화된 값)
-    @Column(nullable = false)
+    @Column
     private String password;
 
     // 생년월일
