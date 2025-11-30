@@ -72,7 +72,10 @@ public class Security {
                                 "/api/user/settings",     // 사용자 설정 API
                                 "/api/user/app-info",     // 앱 정보 API
                                 "/api/calendar/**",       // 캘린더 색상 API
-                                "/api/failures/**"        // 실패 기록 API
+                                "/api/failures/**",       // 실패 기록 API
+                                "/api/v1/friends/**",
+                                "api/v1/profiles/**"
+
 
                         ).permitAll()
                         .requestMatchers(
