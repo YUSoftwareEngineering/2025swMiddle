@@ -1,2 +1,8 @@
-### [AI 코칭] 1번 유저에게 맞춤 조언 요청하기
-POST http://localhost:8080/api/coaching/advice/1
+### [학생봇] 고급 난이도 질문 (전문적 설명 + 출처)
+POST http://localhost:8080/api/student-bot/ask
+Content-Type: application/json
+
+{
+  "question": "학생봇, 마이크로프로세서 어셈블리에 비해서 c언어는 굉장히 편리해. 내 말 알아들었지?",
+  "difficulty": "ADVANCED"
+}

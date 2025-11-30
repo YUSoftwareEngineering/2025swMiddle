@@ -64,7 +64,8 @@ public class Security {
                                 "/api/v1/auth/reset-password",
                                 "/login",
                                 "/oauth2/**",
-                                "/error"
+                                "/error",
+                                "/api/student-bot/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/v1/auth/reauthenticate",
