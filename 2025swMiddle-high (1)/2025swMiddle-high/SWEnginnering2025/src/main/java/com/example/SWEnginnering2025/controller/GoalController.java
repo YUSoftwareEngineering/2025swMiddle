@@ -12,6 +12,7 @@ import com.example.SWEnginnering2025.dto.GoalBulkUpdateRequest;
 import com.example.SWEnginnering2025.dto.GoalResponse;
 import com.example.SWEnginnering2025.dto.GoalStatusRequest;
 import com.example.SWEnginnering2025.service.GoalService;
+import com.example.SWEnginnering2025.util.JwtTokenProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +27,16 @@ import java.time.LocalDate;
 public class GoalController {
 
     private final GoalService goalService;
-
-    public GoalController(GoalService goalService) {
-        this.goalService = goalService;
-    }
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 1. 목표 생성 (POST)
     @PostMapping
-    public ResponseEntity<GoalResponse> createGoal(@RequestBody @Valid CreateGoalRequest request) { // @Valid 추가
-        GoalResponse response = goalService.createGoal(request);
+    public ResponseEntity<GoalResponse> createGoal(
+            @RequestHeader("Authorization") String token,
+            @RequestBody @Valid CreateGoalRequest request) { // @Valid 추가
+        String jwt = token.replace("Bearer", "");
+        Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
+        GoalResponse response = goalService.createGoal(userId,request);
         return ResponseEntity.ok(response);
     }
 
@@ -77,8 +79,12 @@ public class GoalController {
 
     // 7. 날짜별 성과 색상 조회 (GET /api/v1/goals/achievement?date=2025-11-25)
     @GetMapping("/achievement")
-    public ResponseEntity<AchievementColor> getAchievementColor(@RequestParam LocalDate date) {
-        AchievementColor color = goalService.getAchievementColor(date);
+    public ResponseEntity<AchievementColor> getAchievementColor(
+            @RequestHeader("Authorization") String token,
+            @RequestParam LocalDate date) {
+        String jwt = token.replace("Bearer","");
+        Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
+        AchievementColor color = goalService.getAchievementColor(userId,date);
         return ResponseEntity.ok(color);
     }
 }
