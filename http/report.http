@@ -1,0 +1,75 @@
+### 정상 신고 생성 (성공 케이스)
+POST http://localhost:8080/api/v1/reports
+
+{
+  "reporterId": 1,
+  "reportedUserId": 2,
+  "reasonType": "욕설",
+  "description": "채팅에서 심한 욕설 사용"
+}
+
+###  존재하지 않는 reporterId (에러 케이스)
+POST http://localhost:8080/api/v1/reports
+
+{
+  "reporterId": 999,
+  "reportedUserId": 2,
+  "reasonType": "욕설",
+  "description": "테스트"
+}
+
+###  존재하지 않는 reportedUserId (에러 케이스)
+POST http://localhost:8080/api/v1/reports
+
+{
+  "reporterId": 1,
+  "reportedUserId": 999,
+  "reasonType": "스팸",
+  "description": "테스트"
+}
+
+###  자기 자신 신고 (에러 케이스)
+POST http://localhost:8080/api/v1/reports
+
+{
+  "reporterId": 1,
+  "reportedUserId": 1,
+  "reasonType": "기타",
+  "description": "자기 자신 신고 테스트"
+}
+
+###  전체 신고 목록 조회
+GET http://localhost:8080/api/v1/reports
+
+###  상태별 조회 – PENDING 만
+GET http://localhost:8080/api/v1/reports?status=PENDING
+
+###  신고 상태 변경 – RESOLVED (성공 케이스)
+PATCH http://localhost:8080/api/v1/reports/1/status
+
+{
+  "status": "RESOLVED"
+}
+
+###  신고 상태 변경 – REJECTED (또 다른 하나)
+PATCH http://localhost:8080/api/v1/reports/2/status
+
+{
+  "status": "REJECTED"
+}
+
+###  상태별 조회 – RESOLVED / REJECTED 필터 확인
+GET http://localhost:8080/api/v1/reports?status=RESOLVED
+
+###  상태별 조회 – REJECTED 필터 확인
+GET http://localhost:8080/api/v1/reports?status=REJECTED
+
+###  상태별 조회 – PENDING 필터 확인
+GET http://localhost:8080/api/v1/reports?status=PENDING
+
+###  없는 ID로 상태 변경 (에러 케이스)
+PATCH http://localhost:8080/api/v1/reports/999/status
+
+{
+  "status": "RESOLVED"
+}
