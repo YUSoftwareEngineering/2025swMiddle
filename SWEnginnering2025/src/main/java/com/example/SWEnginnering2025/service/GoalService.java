@@ -45,7 +45,7 @@ import java.util.stream.Collectors; // 스트림으로 그룹핑/변환할 때 �
 public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자에서 한 번 정해진 뒤로는 절대 바뀌지 않는 GoalRepository 필드를 하나 갖고 있다.
 
     private final GoalRepository goalRepository;
-    private final JWTAuthentication jwtAuthentication;
+
 
     // 월간 캘린더 조회
     public MonthlyCalendarDto getMonthlyCalendar(Long userId, LocalDate baseDate) {

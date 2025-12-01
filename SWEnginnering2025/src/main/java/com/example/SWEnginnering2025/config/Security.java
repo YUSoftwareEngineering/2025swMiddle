@@ -58,23 +58,27 @@ public class Security {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 // [팀원 인증 없이 허용]
-                                "/api/v1/auth/register/**",
-                                "/api/v1/auth/login/**",
-                                "/api/v1/auth/find-userid",
-                                "/api/v1/auth/request-reset-password",
-                                "/api/v1/auth/reset-password",
-                                "/error",
+                                "/",
+                                "/index.html",
+                                "/register.html",
+                                "/favicon.ico",
+                                "/.well-known/**",
+                                "/js/**",
+                                "/css/**",
+                                "/images/**",
+
+                                // 기존 permitAll() 경로 (API, 로그인 페이지 등)
+                                "/api/auth/**",  // 추가함 12-01
                                 "/login",
+                                "/home.html",
+                                "/focus.html",
+                                "/friends.html",
+                                "/forgot-password.html",
+                                "/analysis.html",
                                 "/oauth2/**",
-
-                                "/api/coaching/**",       // AI 코칭 API (현재 경로)
-                                "/api/v1/coaching/**",    // AI 코칭 API (버전 포함 경로)
-                                "/api/user/settings",     // 사용자 설정 API
-                                "/api/user/app-info",     // 앱 정보 API
-                                "/api/calendar/**",       // 캘린더 색상 API
-                                "/api/failures/**"        // 실패 기록 API
-
+                                "/error"
                         ).permitAll()
+
                         .requestMatchers(
                                 "/api/v1/auth/reauthenticate",
                                 "/api/v1/auth/withdraw",
