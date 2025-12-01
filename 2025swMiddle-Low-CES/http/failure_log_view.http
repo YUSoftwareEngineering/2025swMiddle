@@ -1,0 +1,39 @@
+###  기본 요약 (weeks 사용)
+POST http://localhost:8080/api/failures/summary
+
+{
+  "userId": 1,
+  "weeks": 4
+}
+
+###  기간 더 좁게 (예: 1주)
+POST http://localhost:8080/api/failures/summary
+
+{
+  "userId": 1,
+  "weeks": 1
+}
+
+### 정확한 날짜(from/to)로 집계
+POST http://localhost:8080/api/failures/summary
+
+{
+  "userId": 1,
+  "from": "2025-11-24",
+  "to":   "2025-11-29"
+}
+
+### 실패 로그가 전혀 없는 사용자
+POST http://localhost:8080/api/failures/summary
+
+{
+  "userId": 999,
+  "weeks": 4
+}
+
+### 잘못된 요청(에러 케이스) – userId 누락
+POST http://localhost:8080/api/failures/summary
+
+{
+  "weeks": 4
+}
