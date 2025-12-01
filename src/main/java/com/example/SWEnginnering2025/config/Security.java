@@ -71,8 +71,7 @@ public class Security {
                                 "/images/**",
 
                                 // 기존 permitAll() 경로 (API, 로그인 페이지 등)
-                                "/api/auth/register/**",
-                                "/api/auth/login/**",
+                                "/api/auth/**",  // 추가함 12-01
                                 "/login",
                                 "/home.html",
                                 "/focus.html",
@@ -90,6 +89,10 @@ public class Security {
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2LoginSuccessHandler)
                 );
+
+        // 추가함 12-01
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }

@@ -38,9 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // JWT 검사를 건너뛸 URL
         String path = request.getServletPath();
-        if (path.equals("/") || path.equals("/index.html") || path.equals("/register.html") ||
-                path.startsWith("/js/") || path.startsWith("/css/") || path.startsWith("/images/") ||
-                path.startsWith("/api/auth/register") || path.startsWith("/api/auth/login")) {
+        if (path.startsWith("/api/auth/") ||        // ← 회원가입/로그인 전부
+                path.equals("/") ||
+                path.equals("/index.html") ||
+                path.equals("/register.html") ||
+                path.startsWith("/js/") ||
+                path.startsWith("/css/") ||
+                path.startsWith("/images/")) {
 
             filterChain.doFilter(request, response);
             return;
