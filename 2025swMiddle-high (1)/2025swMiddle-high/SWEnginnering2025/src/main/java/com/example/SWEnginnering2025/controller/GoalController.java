@@ -23,7 +23,7 @@ import java.time.LocalDate;
 
 @RestController // "나는 컨트롤러야, JSON으로 대답할게"
 @RequestMapping("/api/v1/goals") // "주소는 이걸로 시작해"
-
+@RequiredArgsConstructor
 public class GoalController {
 
     private final GoalService goalService;
