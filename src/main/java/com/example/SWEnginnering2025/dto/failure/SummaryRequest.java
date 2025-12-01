@@ -4,6 +4,7 @@
         Date of last update: 2025.12.01
 */
 
+
 package com.example.SWEnginnering2025.dto.failure;
 
 import jakarta.validation.constraints.NotNull;
