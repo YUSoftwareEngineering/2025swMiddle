@@ -2,7 +2,7 @@
     Project: Security.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.30
+    Date of last update: 2025.12.01
 */
 package com.example.SWEnginnering2025.config;
 
@@ -19,9 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-// WebSecurityCustomizer를 제거했으므로, Configuration 외에 WebSecurityCustomizer도 필요 없음
 @Configuration
-@EnableWebSecurity // 명시적으로 추가하여 Security 설정을 활성화합니다.
+@EnableWebSecurity
 public class Security {
 
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -39,10 +38,6 @@ public class Security {
         return new BCryptPasswordEncoder();
     }
 
-    // 💡 경고를 유발하던 webSecurityCustomizer() 메서드를 제거합니다.
-    // @Bean
-    // public WebSecurityCustomizer webSecurityCustomizer() { ... }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -57,28 +52,17 @@ public class Security {
                         )
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // 💡 정적 리소스 및 모든 공개 페이지 경로를 permitAll()에 통합합니다.
-                        // 이로써 web.ignoring()을 사용했을 때 발생하던 경고가 사라집니다.
                         .requestMatchers(
-                                // 기존 web.ignoring() 경로 (정적 리소스)
                                 "/",
-                                "/index.html",
-                                "/register.html",
+                                "/*.html",
                                 "/favicon.ico",
                                 "/.well-known/**",
                                 "/js/**",
                                 "/css/**",
                                 "/images/**",
-
-                                // 기존 permitAll() 경로 (API, 로그인 페이지 등)
                                 "/api/auth/register/**",
                                 "/api/auth/login/**",
                                 "/login",
-                                "/home.html",
-                                "/focus.html",
-                                "/friends.html",
-                                "/forgot-password.html",
-                                "/analysis.html",
                                 "/oauth2/**",
                                 "/error"
                         ).permitAll()

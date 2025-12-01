@@ -17,7 +17,7 @@ const Login = () => {
 
         try {
             const result = await authApi.login(form);
-            tokenManager.save(result);
+            TokenManager.save(result);
             window.location.href = '/home.html';
         } catch (err) {
             setError(err.status === 401 

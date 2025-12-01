@@ -31,7 +31,7 @@ const Sidebar = ({ profile }) => {
                 </div>
                 <div className="profile-info">
                     <div className="profile-name">{profile?.nickname || '로딩 중...'}</div>
-                    <div className="profile-id">@{tokenManager.getLoginId() || 'user'}</div>
+                    <div className="profile-id">@{TokenManager.getLoginId() || 'user'}</div>
                 </div>
             </div>
             <div className="sidebar-level">
@@ -487,7 +487,7 @@ const FriendsPage = () => {
     const [activeTab, setActiveTab] = useState('list');
     const [requestCount, setRequestCount] = useState(0);
     const [myProfile, setMyProfile] = useState(null);
-    const userId = tokenManager.getUserId(); // 실제 로그인한 사용자 ID
+    const userId = TokenManager.getUserId(); // 실제 로그인한 사용자 ID
 
     const loadRequestCount = async () => {
         try {
@@ -506,7 +506,7 @@ const FriendsPage = () => {
             console.error('내 프로필 로드 실패:', err);
             // 프로필 로드 실패 시 기본값 사용
             setMyProfile({
-                nickname: tokenManager.getNickname() || '사용자',
+                nickname: TokenManager.getNickname() || '사용자',
                 userId: userId,
                 level: 1,
                 xp: 0
@@ -515,7 +515,7 @@ const FriendsPage = () => {
     };
 
     useEffect(() => {
-        if (!tokenManager.isLoggedIn()) {
+        if (!TokenManager.isLoggedIn()) {
             window.location.href = '/index.html';
             return;
         }

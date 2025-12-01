@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SelfGrow - 프로필 설정</title>
+  <link rel="stylesheet" href="/css/profile-page.css">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="/js/TokenManager.js"></script>
+<script type="text/babel">
+  function ProfileSettings() {
+      const [user, setUser] = React.useState(null);
+      const [bio, setBio] = React.useState("");
+      const [activityPublic, setActivityPublic] = React.useState(false);
+      const [profilePublic, setProfilePublic] = React.useState(false);
+      const [message, setMessage] = React.useState("");
+      const [modalOpen, setModalOpen] = React.useState(false);
+      const [password, setPassword] = React.useState("");
+      const [loading, setLoading] = React.useState(true);
+
+      React.useEffect(() => {
+          async function fetchProfile() {
+              const userId = TokenManager.getUserId();
+              const token = TokenManager.getAccessToken();
+              if (!token || !userId) return;
+
+              try {
+                  const res = await fetch(`/api/v1/profile/me?userId=${userId}`, {
+                      headers: { 'Authorization': `Bearer ${token}` }
+                  });
+                  if (!res.ok) { setMessage("프로필 조회 실패"); return; }
+                  const data = await res.json();
+                  setUser(data);
+                  setBio(data.bio || "");
+                  setActivityPublic(data.activity_public);
+                  setProfilePublic(data.profile_public);
+              } catch(e) { console.error(e); setMessage("프로필 조회 중 에러"); }
+              finally { setLoading(false); }
+          }
+          fetchProfile();
+      }, []);
+
+      async function handleSave() {
+          const userId = TokenManager.getUserId();
+          const token = TokenManager.getAccessToken();
+          try {
+              const res = await fetch(`/api/v1/profile/update?userId=${userId}`, {
+                  method:"PUT",
+                  headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${token}` },
+                  body: JSON.stringify({ bio, activity_public:activityPublic, profile_public:profilePublic })
+              });
+              if(!res.ok){ setMessage("프로필 수정 실패"); return; }
+              setMessage("프로필 수정 완료!");
+          } catch(e){ console.error(e); setMessage("프로필 수정 중 에러"); }
+      }
+
+      async function handleDelete() {
+          if(!password){ setMessage("비밀번호를 입력해주세요"); return; }
+          const token = TokenManager.getAccessToken();
+          try{
+              const res = await fetch(`/api/auth/withdraw`,{
+                  method:"POST",
+                  headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${token}` },
+                  body: JSON.stringify({ password })
+              });
+              if(!res.ok){ setMessage("계정 삭제 실패"); return; }
+              alert("계정이 삭제되었습니다.");
+              TokenManager.clear();
+              window.location.href = "/";
+          }catch(e){ console.error(e); setMessage("계정 삭제 중 에러"); }
+      }
+
+      if(loading) return <div className="loading">Loading...</div>;
+      if(!user) return <div className="error-message">프로필 정보를 불러올 수 없습니다.</div>;
+
+      return (
+          <div className="profile-container">
+              <h1>프로필 설정</h1>
+
+              <label>소개글:</label>
+              <textarea value={bio} onChange={e=>setBio(e.target.value)} rows={4}/>
+
+              <div className="toggle-group">
+                  <label>활동 공개:
+                      <div className="switch">
+                          <input type="checkbox" checked={activityPublic} onChange={e=>setActivityPublic(e.target.checked)} />
+                          <span className="slider round"></span>
+                      </div>
+                  </label>
+
+                  <label>프로필 공개:
+                      <div className="switch">
+                          <input type="checkbox" checked={profilePublic} onChange={e=>setProfilePublic(e.target.checked)} />
+                          <span className="slider round"></span>
+                      </div>
+                  </label>
+              </div>
+
+              <button className="btn-save" onClick={handleSave}>저장</button>
+              <button className="btn-delete" onClick={()=>setModalOpen(true)}>계정 삭제</button>
+
+              {message && <div className={message.includes("실패")?"error-message":"success-message"}>{message}</div>}
+
+              {modalOpen &&
+              <div className="modal-bg">
+                  <div className="modal">
+                      <h3>비밀번호 확인</h3>
+                      <input type="password" placeholder="비밀번호 입력" value={password} onChange={e=>setPassword(e.target.value)} />
+                      <button className="btn-delete" onClick={handleDelete}>삭제</button>
+                      <button className="btn-cancel" onClick={()=>{setModalOpen(false); setPassword("");}}>취소</button>
+                  </div>
+              </div>
+              }
+          </div>
+      );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<ProfileSettings />);
+</script>
+</body>
+</html>

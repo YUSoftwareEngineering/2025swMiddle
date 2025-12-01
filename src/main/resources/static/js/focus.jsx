@@ -24,7 +24,7 @@ const Sidebar = ({ profile }) => {
                 <div className="profile-avatar">{profile?.nickname?.charAt(0) || '?'}</div>
                 <div className="profile-info">
                     <div className="profile-name">{profile?.nickname || '로딩 중...'}</div>
-                    <div className="profile-id">@{tokenManager.getLoginId() || 'user'}</div>
+                    <div className="profile-id">@{TokenManager.getLoginId() || 'user'}</div>
                 </div>
             </div>
             <div className="sidebar-level">
@@ -52,7 +52,7 @@ const Sidebar = ({ profile }) => {
 const focusStorage = {
     // 사용자별 키 생성
     getKey: (base) => {
-        const userId = tokenManager?.getUserId?.() || 'guest';
+        const userId = TokenManager?.getUserId?.() || 'guest';
         return `${base}_${userId}`;
     },
 
@@ -115,7 +115,7 @@ const FocusPage = () => {
 
     // 프로필 데이터
     const [myProfile, setMyProfile] = useState(null);
-    const userId = tokenManager.getUserId();
+    const userId = TokenManager.getUserId();
 
     const timerRef = useRef(null);
 
@@ -141,7 +141,7 @@ const FocusPage = () => {
         } catch (err) {
             console.error('내 프로필 로드 실패:', err);
             setMyProfile({
-                nickname: tokenManager.getNickname() || '사용자',
+                nickname: TokenManager.getNickname() || '사용자',
                 userId: userId,
                 level: 1,
                 xp: 0
@@ -209,7 +209,7 @@ const FocusPage = () => {
 
     // 초기 로드
     useEffect(() => {
-        if (!tokenManager.isLoggedIn()) {
+        if (!TokenManager.isLoggedIn()) {
             window.location.href = '/index.html';
             return;
         }

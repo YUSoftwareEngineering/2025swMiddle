@@ -39,7 +39,7 @@ const Register = () => {
             });
 
             // 서버에서 JWT 받으면 저장
-            tokenManager.save(result);
+            TokenManager.save(result);
 
             // 홈 페이지 이동
             window.location.href = '/home.html';

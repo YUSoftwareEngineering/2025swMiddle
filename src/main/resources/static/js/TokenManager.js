@@ -1,4 +1,5 @@
-const tokenManager = {
+// TokenManager.js
+const TokenManager = {
     // 토큰 데이터 저장 (accessToken, refreshToken, nickname, userId, loginId)
     save(data) {
         if (data.accessToken) {
@@ -61,5 +62,13 @@ const tokenManager = {
     // 기존 호환성을 위한 get 메서드 (accessToken 반환)
     get() {
         return localStorage.getItem('accessToken');
+    },
+
+    // 새로 추가: getToken() 메서드 (기존 코드 호환)
+    getToken() {
+        return this.get();
     }
 };
+
+// 브라우저 전역에서 접근 가능하게 설정
+window.TokenManager = TokenManager;

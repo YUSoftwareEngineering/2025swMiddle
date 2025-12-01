@@ -1,0 +1,52 @@
+<div id="root"></div>
+
+<script type="text/babel">
+    function OtherProfile({ userId }) {
+        const [profile, setProfile] = React.useState(null);
+        const [error, setError] = React.useState(null);
+
+        React.useEffect(() => {
+            async function fetchUser() {
+                const token = TokenManager.getAccessToken();
+                if (!token || !userId) {
+                    setError("토큰 또는 사용자 ID 없음");
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`/api/v1/profile/public/${userId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) {
+                        setError(`프로필 조회 실패: ${res.status}`);
+                        return;
+                    }
+                    const data = await res.json();
+                    setProfile(data);
+                } catch (e) {
+                    console.error(e);
+                    setError("프로필 조회 중 에러 발생");
+                }
+            }
+
+            fetchUser();
+        }, [userId]);
+
+        if (error) return <div className="error">{error}</div>;
+        if (!profile) return <div className="loading">Loading...</div>;
+
+        return (
+            <div className="profile-container">
+                <h1>{profile.nickname || "이름 없음"}님의 프로필</h1>
+                <p>소개: {profile.bio || "없음"}</p>
+                <p>레벨: {profile.level || 0}</p>
+                <p>활동 공개: {profile.activityPublic ? '공개' : '비공개'}</p>
+                <p>프로필 공개: {profile.profilePublic ? '공개' : '비공개'}</p>
+                <p>XP: {profile.xp || 0}</p>
+            </div>
+        );
+    }
+
+    const userId = new URLSearchParams(window.location.search).get('userId');
+    ReactDOM.createRoot(document.getElementById('root')).render(<OtherProfile userId={userId} />);
+</script>

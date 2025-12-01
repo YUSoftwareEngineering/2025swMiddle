@@ -3,7 +3,7 @@ const { useState, useEffect } = React;
 // 로컬 스토리지 기반 실패 기록 관리 (백엔드 API가 없으므로 프론트에서 관리)
 const failureStorage = {
     getKey: () => {
-        const userId = tokenManager?.getUserId?.() || 'guest';
+        const userId = TokenManager?.getUserId?.() || 'guest';
         return `failureAnalysis_${userId}`;
     },
     
@@ -49,7 +49,7 @@ const Sidebar = ({ profile }) => {
                 <div className="profile-avatar">{profile?.nickname?.charAt(0) || '?'}</div>
                 <div className="profile-info">
                     <div className="profile-name">{profile?.nickname || '로딩 중...'}</div>
-                    <div className="profile-id">@{tokenManager.getLoginId() || 'user'}</div>
+                    <div className="profile-id">@{TokenManager.getLoginId() || 'user'}</div>
                 </div>
             </div>
             <div className="sidebar-level">
@@ -242,7 +242,7 @@ const AnalysisPage = () => {
         recentFailures: []
     });
     
-    const userId = tokenManager.getUserId();
+    const userId = TokenManager.getUserId();
     const days = ['월', '화', '수', '목', '금', '토', '일'];
     
     // 프로필 로드
@@ -253,7 +253,7 @@ const AnalysisPage = () => {
         } catch (err) {
             console.error('프로필 로드 실패:', err);
             setMyProfile({
-                nickname: tokenManager.getNickname() || '사용자',
+                nickname: TokenManager.getNickname() || '사용자',
                 level: 1,
                 xp: 0
             });
@@ -372,7 +372,7 @@ const AnalysisPage = () => {
     
     // 초기 로드
     useEffect(() => {
-        if (!tokenManager.isLoggedIn()) {
+        if (!TokenManager.isLoggedIn()) {
             window.location.href = '/index.html';
             return;
         }

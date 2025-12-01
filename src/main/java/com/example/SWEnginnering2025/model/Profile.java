@@ -34,6 +34,9 @@ public class Profile {
     @Column(nullable = false)
     private boolean activityPublic;  // 활동 상태 공개 여부 (5-10)
 
+    @Column(nullable = false)
+    private boolean bioPublic;
+
     @Column
     private Long representativeCharacterId; // 대표 캐릭터 ID (3-5, 5-5)
 
@@ -60,6 +63,7 @@ public class Profile {
         this.nickname = nickname;
         this.profilePublic = true; // 새 프로필은 기본적으로 공개 상태로 설정
         this.activityPublic = true;
+        this.bioPublic = true;
         this.level = 1; // 22312281 이가인 추가 - 기본 레벨 1
         this.xp = 0; // 22312281 이가인 추가 - 기본 경험치 0
         this.updatedAt = LocalDateTime.now();// 생성 시점 기준 업데이트 시간 기록
@@ -119,6 +123,16 @@ public class Profile {
     public boolean isActivityPublic() {
         return activityPublic;
     }
+
+    public boolean isBioPublic() {
+        return bioPublic;
+    }
+
+    public void setBioPublic(boolean bioPublic) {
+        this.bioPublic = bioPublic;
+        touchUpdatedAt();
+    }
+
 
     public void setActivityPublic(boolean activityPublic) {
         this.activityPublic = activityPublic;

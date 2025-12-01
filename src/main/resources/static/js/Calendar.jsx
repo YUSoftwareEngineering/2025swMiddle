@@ -24,7 +24,7 @@ const Sidebar = ({ profile }) => {
                 <div className="profile-avatar">{profile?.nickname?.charAt(0) || '?'}</div>
                 <div className="profile-info">
                     <div className="profile-name">{profile?.nickname || '로딩 중...'}</div>
-                    <div className="profile-id">@{tokenManager.getLoginId() || 'user'}</div>
+                    <div className="profile-id">@{TokenManager.getLoginId() || 'user'}</div>
                 </div>
             </div>
             <div className="sidebar-level">
@@ -422,7 +422,7 @@ const CalendarPage = () => {
         { id: null, name: '기타' }
     ];
     const [failureTags, setFailureTags] = useState(defaultTags);
-    const userId = tokenManager.getUserId(); // 실제 로그인한 사용자 ID
+    const userId = TokenManager.getUserId(); // 실제 로그인한 사용자 ID
 
     // 내 프로필 로드
     const loadMyProfile = async () => {
@@ -432,7 +432,7 @@ const CalendarPage = () => {
         } catch (err) {
             console.error('내 프로필 로드 실패:', err);
             setMyProfile({
-                nickname: tokenManager.getNickname() || '사용자',
+                nickname: TokenManager.getNickname() || '사용자',
                 userId: userId,
                 level: 1,
                 xp: 0
@@ -491,7 +491,7 @@ const CalendarPage = () => {
 
     // 초기 로드
     useEffect(() => {
-        if (!tokenManager.isLoggedIn()) {
+        if (!TokenManager.isLoggedIn()) {
             window.location.href = '/index.html';
             return;
         }

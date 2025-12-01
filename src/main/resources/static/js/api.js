@@ -1,6 +1,6 @@
 // 인증 헤더를 포함한 fetch 헬퍼 함수
 const authFetch = async (url, options = {}) => {
-    const token = tokenManager?.getAccessToken?.() || localStorage.getItem('accessToken');
+    const token = TokenManager?.getAccessToken?.() || localStorage.getItem('accessToken');
     
     const headers = {
         'Content-Type': 'application/json',
@@ -20,7 +20,7 @@ const authFetch = async (url, options = {}) => {
         // 401 Unauthorized - 토큰 만료 또는 인증 실패
         if (res.status === 401) {
             console.warn('인증 만료 - 다시 로그인 필요');
-            tokenManager.clear();
+            TokenManager.clear();
             window.location.href = '/index.html';
             return;
         }

@@ -2,7 +2,7 @@
     Project: JwtAuthenticationFilter.java
     Author: YHW
     Date of creation: 2025.11.26
-    Date of last update: 2025.11.29
+    Date of last update: 2025.12.01
 */
 
 package com.example.SWEnginnering2025.filter;
@@ -38,10 +38,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // JWT 검사를 건너뛸 URL
         String path = request.getServletPath();
-        if (path.equals("/") || path.equals("/index.html") || path.equals("/register.html") ||
-                path.startsWith("/js/") || path.startsWith("/css/") || path.startsWith("/images/") ||
-                path.startsWith("/api/auth/register") || path.startsWith("/api/auth/login")) {
-
+        if (
+                path.equals("/") ||
+                        path.equals("/index.html") ||
+                        path.equals("/register.html") ||
+                        path.startsWith("/js/") ||
+                        path.startsWith("/css/") ||
+                        path.startsWith("/images/") ||
+                        path.startsWith("/favicon.ico") ||
+                        path.startsWith("/api/auth/register") ||
+                        path.startsWith("/api/auth/login") ||
+                        path.startsWith("/oauth2/") ||
+                        path.equals("/home.html") ||
+                        path.equals("/profile.html") ||
+                        path.equals("/focus.html") ||
+                        path.equals("/friends.html") ||
+                        path.equals("/analysis.html") ||
+                        path.equals("/forgot-password.html")
+        ) {
             filterChain.doFilter(request, response);
             return;
         }
