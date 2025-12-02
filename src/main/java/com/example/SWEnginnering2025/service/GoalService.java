@@ -146,10 +146,10 @@ public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자
 
     // 1. 목표 생성
     @Transactional
-    public GoalResponse createGoal(CreateGoalRequest request) {
+    public GoalResponse createGoal(Long userId,CreateGoalRequest request) {
         // 중복 체크 로직
         boolean isDuplicate = goalRepository.existsByUserIdAndTargetDateAndTitle(
-                1L, request.getTargetDate(), request.getTitle());
+                userId, request.getTargetDate(), request.getTitle());
 
         if (isDuplicate) {
             //409 Conflict 에러
@@ -163,7 +163,7 @@ public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자
                 .category(request.getCategory())
                 .isNotificationEnabled(request.isNotificationEnabled())
                 .scheduledTime(request.getScheduledTime())
-                .userId(1L) // 임시 유저 ID
+                .userId(userId) // 임시 유저 ID
                 .build();
 
         // 저장
@@ -227,9 +227,9 @@ public class GoalService { // GoalService 안에서만 쓸 수 있고, 생성자
 
     // 7. [신규] 특정 날짜의 성과 색상 조회
     @Transactional(readOnly = true)
-    public AchievementColor getAchievementColor(LocalDate date) {
-        // 1. 해당 날짜의 모든 목표 가져오기 (임시 유저ID 1L)
-        List<Goal> goals = goalRepository.findAllByUserIdAndTargetDate(1L, date);
+    public AchievementColor getAchievementColor(Long userId,LocalDate date) {
+        // 1. 해당 날짜의 모든 목표 가져오기
+        List<Goal> goals = goalRepository.findAllByUserIdAndTargetDate(userId, date);
 
         // 2. 공통 메서드로 색상 결정
         return decideAchievementColor(goals);
