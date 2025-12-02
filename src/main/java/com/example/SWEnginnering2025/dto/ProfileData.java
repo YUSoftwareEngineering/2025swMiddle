@@ -1,12 +1,14 @@
 /*
    Project: MonthlyCalendarDto.java
-   Author: 윤나영
+   Author: 윤나영, LGI, YHW
   Date of creation: 2025.11.27
-  Date of last update: 2025.11.27
+  Date of last update: 2025.12.01
 */
 package com.example.SWEnginnering2025.dto;
 import com.example.SWEnginnering2025.model.Profile;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Collections;
 // 내 프로필(my profile)을 조회할 때 사용하는 DTO.
 // ProfileSummary가 "공개된 다른 사람 프로필 요약"이라면,
 // ProfileData는 로그인한 사용자가 자신의 전체 프로필 정보를 조회할 때 반환되는 풀(full) 데이터 구조.
@@ -46,6 +48,10 @@ public class ProfileData {
     // 22312281 이가인 추가 - 경험치
     private Integer xp;
 
+    private Integer totalGoalsCompleted;
+
+    private List<RecentGoalInfo> recentCompletedGoals;
+
     // 프로필이 마지막으로 수정된 시각
     private LocalDateTime updatedAt;
 
@@ -63,6 +69,8 @@ public class ProfileData {
                        Long representativeCharacterId,
                        Integer level,  // 22312281 이가인 추가
                        Integer xp,     // 22312281 이가인 추가
+                       Integer totalGoalsCompleted,
+                       List<RecentGoalInfo> recentCompletedGoals,
                        LocalDateTime updatedAt) {
         this.profileId = profileId;
         this.userId = userId;
@@ -75,6 +83,8 @@ public class ProfileData {
         this.representativeCharacterId = representativeCharacterId;
         this.level = level;   // 22312281 이가인 추가
         this.xp = xp;         // 22312281 이가인 추가
+        this.totalGoalsCompleted = totalGoalsCompleted;
+        this.recentCompletedGoals = recentCompletedGoals;
         this.updatedAt = updatedAt;
     }
 
@@ -96,6 +106,8 @@ public class ProfileData {
                 profile.getRepresentativeCharacterId(),
                 profile.getLevel(),  // 22312281 이가인 추가
                 profile.getXp(),     // 22312281 이가인 추가
+                0,
+                Collections.emptyList(),
                 profile.getUpdatedAt()
         );
     }
@@ -140,6 +152,14 @@ public class ProfileData {
     // 22312281 이가인 추가 - 경험치 Getter
     public Integer getXp() {
         return xp;
+    }
+
+    public Integer getTotalGoalsCompleted() {
+        return totalGoalsCompleted;
+    }
+
+    public List<RecentGoalInfo> getRecentCompletedGoals() {
+        return recentCompletedGoals;
     }
 
     public LocalDateTime getUpdatedAt() {

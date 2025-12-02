@@ -201,3 +201,73 @@ body {
     .social-buttons { flex-direction: column; }
     .social-btn { justify-content: center; }
 }
+
+/* 프로필 카드 */
+.profile-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-width: 500px;
+}
+
+.profile-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+}
+
+.profile-subtitle {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #26a69a;
+    font-weight: 500;
+}
+
+.profile-form {
+    margin-top: 24px;
+}
+
+.profile-form .form-group {
+    margin-bottom: 18px;
+}
+
+.profile-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+.profile-form input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.profile-form input:focus {
+    outline: none;
+    border-color: #26a69a;
+}
+
+.save-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #26a69a, #00897b);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(38,166,154,0.25);
+}
