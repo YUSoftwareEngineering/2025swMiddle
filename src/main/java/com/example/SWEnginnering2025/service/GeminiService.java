@@ -24,8 +24,6 @@ public class GeminiService {
         GeminiRequest request = new GeminiRequest(prompt);
 
         // [수정] 사용자님 목록에 있는 'gemini-2.5-flash' 모델을 사용합니다!
-        String requestUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
-        // application.properties 의 값 활용 [수정]
         String requestUrl = apiUrl + "?key=" + apiKey;
 
         System.out.println("👉 요청 URL: " + requestUrl); // (로그 확인용)

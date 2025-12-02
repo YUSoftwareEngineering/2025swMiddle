@@ -79,7 +79,8 @@ public class Security {
                                 "/forgot-password.html",
                                 "/analysis.html",
                                 "/oauth2/**",
-                                "/error"
+                                "/error",
+                                "/api/student-bot/**" //추가함 12-02(학생봇용)
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

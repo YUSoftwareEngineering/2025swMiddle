@@ -1,8 +1,8 @@
-### [설정 변경 테스트] 알림 켜기(1)
-PATCH http://localhost:8080/api/user/settings
+### [학생봇] 내가 가르쳐주기 (마이크로프로세서 예시)
+POST http://localhost:8080/api/student-bot/ask
 Content-Type: application/json
 
 {
-  "notificationEnabled": 1,
-  "friendRequestPolicy": "ALL"
+  "question": "마이크로프로세서 어셈블리에서 MOV는 데이터를 이동시키는 명령어라구!",
+  "difficulty": "INTERMEDIATE"
 }
