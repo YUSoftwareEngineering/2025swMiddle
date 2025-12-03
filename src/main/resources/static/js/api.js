@@ -1,6 +1,14 @@
 // 인증 헤더를 포함한 fetch 헬퍼 함수
 const authFetch = async (url, options = {}) => {
-    const token = tokenManager?.getAccessToken?.() || localStorage.getItem('accessToken');
+    let token = tokenManager?.getAccessToken?.() || localStorage.getItem('accessToken');
+    
+    // 토큰 유효성 검사 - null, undefined, 빈 문자열, "null", "undefined" 제외
+    if (!token || token === 'null' || token === 'undefined' || token.trim() === '') {
+        token = null;
+    } else {
+        // 토큰에서 모든 공백, 줄바꿈, 탭 제거
+        token = token.replace(/\s+/g, '');
+    }
     
     const headers = {
         'Content-Type': 'application/json',
@@ -157,6 +165,17 @@ const failureApi = {
     
     log: async (data) => {
         return authFetch('/api/failures/log', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+    
+    // 실패 로그 요약 (시각화용)
+    // POST /api/failures/summary
+    // data: { userId, weeks, from?, to? }
+    // returns: { dowSummary: {MON: 3, TUE: 1, ...}, monthlySummary: {"2025-11": 5, ...} }
+    getSummary: async (data) => {
+        return authFetch('/api/failures/summary', {
             method: 'POST',
             body: JSON.stringify(data)
         });
@@ -344,6 +363,60 @@ const studentBotApi = {
     }
 };
 
+// 목표방 API
+const goalRoomApi = {
+    // 방 생성
+    create: async (data) => {
+        return authFetch('/api/goalrooms', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+    
+    // 내 방 + 공개 방 조회
+    getRooms: async (scope) => {
+        const params = scope ? `?scope=${scope}` : '';
+        return authFetch(`/api/goalrooms${params}`);
+    },
+    
+    // 방 참여
+    join: async (roomId) => {
+        return authFetch(`/api/goalrooms/${roomId}/join`, {
+            method: 'POST'
+        });
+    },
+    
+    // 방 탈퇴
+    leave: async (roomId) => {
+        return authFetch(`/api/goalrooms/${roomId}/leave`, {
+            method: 'POST'
+        });
+    },
+    
+    // 공개 방 검색
+    search: async (keyword) => {
+        return authFetch(`/api/goalrooms/search?keyword=${encodeURIComponent(keyword)}`);
+    },
+    
+    // 메시지 전송
+    sendMessage: async (roomId, content) => {
+        return authFetch(`/api/goalrooms/${roomId}/messages`, {
+            method: 'POST',
+            body: JSON.stringify({ content })
+        });
+    },
+    
+    // 메시지 조회
+    getMessages: async (roomId, page = 0, size = 30) => {
+        return authFetch(`/api/goalrooms/${roomId}/messages?page=${page}&size=${size}`);
+    },
+    
+    // 오늘의 상태 조회
+    getTodayStatus: async (roomId) => {
+        return authFetch(`/api/goalrooms/${roomId}/today-status`);
+    }
+};
+
 const api = {
     authApi,
     calendarApi,
@@ -352,5 +425,6 @@ const api = {
     focusApi,
     profileApi,
     friendApi,
-    studentBotApi
+    studentBotApi,
+    goalRoomApi
 };

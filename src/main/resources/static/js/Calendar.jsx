@@ -5,12 +5,10 @@ const Sidebar = ({ profile }) => {
     const menuItems = [
         { icon: '📅', label: '캘린더', path: '/home.html', active: true },
         { icon: '👥', label: '친구', path: '/friends.html' },
-        { icon: '🎯', label: '목표방', path: '/goals.html' },
-        { icon: '💬', label: '메시지', path: '/messages.html' },
+        { icon: '🎯', label: '목표방', path: '/goalrooms.html' },
         { icon: '📊', label: '실패 분석', path: '/analysis.html' },
         { icon: '🤖', label: 'AI 학습봇', path: '/ai.html' },
         { icon: '⏱️', label: '포커스 모드', path: '/focus.html' },
-        { icon: '🎮', label: '캐릭터', path: '/character.html' },
     ];
 
     const level = profile?.level || 1;
@@ -49,25 +47,38 @@ const Sidebar = ({ profile }) => {
 };
 
 // 주간 캘린더 컴포넌트
-const WeeklyCalendar = ({ weekData, selectedDate, onSelectDate, dailyGoals }) => {
+const WeeklyCalendar = ({ weekData, selectedDate, onSelectDate, dailyGoals, goalsCache }) => {
     if (!weekData) return <div className="loading">로딩 중...</div>;
 
-    // 선택된 날짜의 상태별 개수 계산
+    // 날짜별 상태 개수 계산 (캐시 또는 현재 선택된 날짜)
     const getStatusCounts = (date) => {
-        if (date !== selectedDate || !dailyGoals) return null;
-        return {
-            completed: dailyGoals.filter(g => g.status === 'COMPLETED').length,
-            partial: dailyGoals.filter(g => g.status === 'PARTIAL_SUCCESS').length,
-            failed: dailyGoals.filter(g => g.status === 'FAILED').length,
-            pending: dailyGoals.filter(g => g.status === 'PENDING' || g.status === 'IN_PROGRESS' || !g.status).length
-        };
+        // 선택된 날짜면 dailyGoals 사용
+        if (date === selectedDate && dailyGoals) {
+            return {
+                completed: dailyGoals.filter(g => g.status === 'COMPLETED').length,
+                partial: dailyGoals.filter(g => g.status === 'PARTIAL_SUCCESS').length,
+                failed: dailyGoals.filter(g => g.status === 'FAILED').length,
+                pending: dailyGoals.filter(g => g.status === 'PENDING' || g.status === 'IN_PROGRESS' || !g.status).length
+            };
+        }
+        // 캐시에 있으면 캐시 사용
+        if (goalsCache && goalsCache[date]) {
+            const cached = goalsCache[date];
+            return {
+                completed: cached.filter(g => g.status === 'COMPLETED').length,
+                partial: cached.filter(g => g.status === 'PARTIAL_SUCCESS').length,
+                failed: cached.filter(g => g.status === 'FAILED').length,
+                pending: cached.filter(g => g.status === 'PENDING' || g.status === 'IN_PROGRESS' || !g.status).length
+            };
+        }
+        return null;
     };
 
     const renderDots = (day) => {
         const statusCounts = getStatusCounts(day.date);
         
         if (statusCounts) {
-            // 선택된 날짜: 실제 상태별 색상 표시
+            // 캐시된 데이터 또는 선택된 날짜: 실제 상태별 색상 표시
             const dots = [];
             for (let i = 0; i < Math.min(statusCounts.completed, 5); i++) dots.push(<span key={`c${i}`} className="dot completed"></span>);
             for (let i = 0; i < Math.min(statusCounts.partial, 5 - dots.length); i++) dots.push(<span key={`p${i}`} className="dot partial"></span>);
@@ -75,7 +86,7 @@ const WeeklyCalendar = ({ weekData, selectedDate, onSelectDate, dailyGoals }) =>
             for (let i = 0; i < Math.min(statusCounts.pending, 5 - dots.length); i++) dots.push(<span key={`pe${i}`} className="dot pending"></span>);
             return dots;
         } else {
-            // 다른 날짜: doneCount 기반 표시
+            // 캐시 없는 날짜: doneCount 기반 표시
             return Array(Math.min(day.totalGoals, 5)).fill(0).map((_, j) => (
                 <span key={j} className={`dot ${j < day.doneCount ? 'completed' : 'pending'}`}></span>
             ));
@@ -102,25 +113,38 @@ const WeeklyCalendar = ({ weekData, selectedDate, onSelectDate, dailyGoals }) =>
 };
 
 // 월간 캘린더 컴포넌트
-const MonthlyCalendar = ({ monthData, selectedDate, onSelectDate, dailyGoals }) => {
+const MonthlyCalendar = ({ monthData, selectedDate, onSelectDate, dailyGoals, goalsCache }) => {
     if (!monthData) return <div className="loading">로딩 중...</div>;
 
-    // 선택된 날짜의 상태별 개수 계산
+    // 날짜별 상태 개수 계산 (캐시 또는 현재 선택된 날짜)
     const getStatusCounts = (date) => {
-        if (date !== selectedDate || !dailyGoals) return null;
-        return {
-            completed: dailyGoals.filter(g => g.status === 'COMPLETED').length,
-            partial: dailyGoals.filter(g => g.status === 'PARTIAL_SUCCESS').length,
-            failed: dailyGoals.filter(g => g.status === 'FAILED').length,
-            pending: dailyGoals.filter(g => g.status === 'PENDING' || g.status === 'IN_PROGRESS' || !g.status).length
-        };
+        // 선택된 날짜면 dailyGoals 사용
+        if (date === selectedDate && dailyGoals) {
+            return {
+                completed: dailyGoals.filter(g => g.status === 'COMPLETED').length,
+                partial: dailyGoals.filter(g => g.status === 'PARTIAL_SUCCESS').length,
+                failed: dailyGoals.filter(g => g.status === 'FAILED').length,
+                pending: dailyGoals.filter(g => g.status === 'PENDING' || g.status === 'IN_PROGRESS' || !g.status).length
+            };
+        }
+        // 캐시에 있으면 캐시 사용
+        if (goalsCache && goalsCache[date]) {
+            const cached = goalsCache[date];
+            return {
+                completed: cached.filter(g => g.status === 'COMPLETED').length,
+                partial: cached.filter(g => g.status === 'PARTIAL_SUCCESS').length,
+                failed: cached.filter(g => g.status === 'FAILED').length,
+                pending: cached.filter(g => g.status === 'PENDING' || g.status === 'IN_PROGRESS' || !g.status).length
+            };
+        }
+        return null;
     };
 
     const renderDots = (day) => {
         const statusCounts = getStatusCounts(day.date);
         
         if (statusCounts) {
-            // 선택된 날짜: 실제 상태별 색상 표시
+            // 캐시된 데이터 또는 선택된 날짜: 실제 상태별 색상 표시
             const dots = [];
             if (statusCounts.completed > 0) dots.push(<span key="c" className="dot completed"></span>);
             if (statusCounts.partial > 0) dots.push(<span key="p" className="dot partial"></span>);
@@ -128,7 +152,7 @@ const MonthlyCalendar = ({ monthData, selectedDate, onSelectDate, dailyGoals }) 
             if (statusCounts.pending > 0) dots.push(<span key="pe" className="dot pending"></span>);
             return dots;
         } else {
-            // 다른 날짜: doneCount 기반 표시
+            // 캐시 없는 날짜: doneCount 기반 표시
             const dots = [];
             if (day.doneCount > 0) dots.push(<span key="done" className="dot completed"></span>);
             if (day.totalGoals - day.doneCount > 0) dots.push(<span key="pending" className="dot pending"></span>);
@@ -214,20 +238,24 @@ const GoalItem = ({ goal, onStatusChange, onDelete, onFailure }) => {
                 <button 
                     className={`action-btn ${goal.status === 'COMPLETED' ? 'active' : ''}`}
                     onClick={() => onStatusChange(goal.id, 'COMPLETED')}
+                    disabled={goal.status === 'FAILED'}
                 >
                     ✓ 완료
                 </button>
                 <button 
                     className={`action-btn ${goal.status === 'PARTIAL_SUCCESS' ? 'active' : ''}`}
                     onClick={() => onStatusChange(goal.id, 'PARTIAL_SUCCESS')}
+                    disabled={goal.status === 'FAILED'}
                 >
                     ◐ 부분완료
                 </button>
                 <button 
                     className={`action-btn fail ${goal.status === 'FAILED' ? 'active' : ''}`}
                     onClick={() => onFailure(goal)}
+                    disabled={goal.status === 'FAILED'}
+                    title={goal.status === 'FAILED' ? '이미 실패 처리된 목표입니다' : ''}
                 >
-                    ✕ 실패
+                    {goal.status === 'FAILED' ? '✕ 실패됨' : '✕ 실패'}
                 </button>
             </div>
         </div>
@@ -372,6 +400,7 @@ const CalendarPage = () => {
     const [weekData, setWeekData] = useState(null);
     const [monthData, setMonthData] = useState(null);
     const [dailyGoals, setDailyGoals] = useState([]);
+    const [goalsCache, setGoalsCache] = useState({}); // 날짜별 목표 캐시
     const [showAddModal, setShowAddModal] = useState(false);
     const [showFailureModal, setShowFailureModal] = useState(false);
     const [failureGoal, setFailureGoal] = useState(null);
@@ -464,6 +493,24 @@ const CalendarPage = () => {
         try {
             const data = await calendarApi.getWeekly(userId, date);
             setWeekData(data);
+            
+            // 주간의 모든 날짜 목표를 미리 로드해서 캐시
+            if (data?.days) {
+                for (const day of data.days) {
+                    if (day.totalGoals > 0 && !goalsCache[day.date]) {
+                        try {
+                            const dayData = await calendarApi.getDaily(userId, day.date);
+                            const goals = dayData?.items || [];
+                            setGoalsCache(prev => ({
+                                ...prev,
+                                [day.date]: goals
+                            }));
+                        } catch (e) {
+                            console.log('날짜별 목표 로드 실패:', day.date);
+                        }
+                    }
+                }
+            }
         } catch (err) {
             console.error('주간 데이터 로드 실패:', err);
         }
@@ -483,7 +530,13 @@ const CalendarPage = () => {
     const loadDailyGoals = async (date) => {
         try {
             const data = await calendarApi.getDaily(userId, date);
-            setDailyGoals(data?.items || []);
+            const goals = data?.items || [];
+            setDailyGoals(goals);
+            // 캐시에 저장
+            setGoalsCache(prev => ({
+                ...prev,
+                [date]: goals
+            }));
         } catch (err) {
             console.error('일일 목표 로드 실패:', err);
         }
@@ -715,6 +768,7 @@ const CalendarPage = () => {
                             selectedDate={selectedDate} 
                             onSelectDate={setSelectedDate}
                             dailyGoals={dailyGoals}
+                            goalsCache={goalsCache}
                         />
                     ) : (
                         <MonthlyCalendar 
@@ -722,6 +776,7 @@ const CalendarPage = () => {
                             selectedDate={selectedDate} 
                             onSelectDate={setSelectedDate}
                             dailyGoals={dailyGoals}
+                            goalsCache={goalsCache}
                         />
                     )}
                 </div>

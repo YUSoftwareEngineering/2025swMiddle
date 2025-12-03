@@ -38,42 +38,68 @@
 
 .summary-card {
     background: white;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.summary-card:first-child {
+    border-left: 4px solid #26a69a;
+}
+
+.summary-card:nth-child(2) {
+    border-left: 4px solid #4ECDC4;
+}
+
+.summary-card:nth-child(3) {
+    border-left: 4px solid #FFE66D;
 }
 
 .summary-card h3 {
-    margin: 0 0 12px;
+    margin: 0 0 16px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .summary-value {
-    font-size: 32px;
-    font-weight: 700;
+    font-size: 40px;
+    font-weight: 800;
     color: #333;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    line-height: 1;
 }
 
 .summary-bar {
-    height: 8px;
-    background: #e5e7eb;
-    border-radius: 4px;
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
     overflow: hidden;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .summary-progress {
     height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
+    border-radius: 5px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(90deg, #26a69a, #4ECDC4);
 }
 
 .summary-change {
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .summary-change.positive {
@@ -86,61 +112,109 @@
 
 .summary-badge {
     display: inline-block;
-    padding: 6px 12px;
-    background: #fff3e0;
-    color: #f57c00;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+    color: #e65100;
     font-size: 13px;
-    font-weight: 600;
-    border-radius: 20px;
+    font-weight: 700;
+    border-radius: 25px;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
 }
 
 /* 차트 영역 */
 .charts-container {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
-    gap: 20px;
+    gap: 24px;
     margin-bottom: 32px;
 }
 
 .chart-card {
     background: white;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
 .chart-header {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f5f5f5;
 }
 
 .chart-header h2 {
-    margin: 0 0 4px;
-    font-size: 18px;
-    font-weight: 600;
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 700;
     color: #333;
 }
 
 .chart-header p {
     margin: 0;
-    font-size: 13px;
+    font-size: 14px;
     color: #26a69a;
+    font-weight: 500;
 }
 
 /* 막대 그래프 */
 .bar-chart {
     display: flex;
-    gap: 20px;
     height: 220px;
+    position: relative;
+}
+
+.chart-y-axis-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 30px;
+    color: #999;
+    font-size: 13px;
+    font-weight: 500;
+    min-width: 30px;
+    text-align: right;
+    padding-right: 12px;
+}
+
+.chart-area {
+    flex: 1;
+    position: relative;
+    border-left: 1px solid #e0e0e0;
+}
+
+.chart-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.grid-line {
+    width: 100%;
+    height: 1px;
+    background: #e8e8e8;
 }
 
 .chart-bars {
-    flex: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px;
-    padding-bottom: 30px;
-    border-bottom: 2px solid #e5e7eb;
+    justify-content: space-around;
+    padding: 0 20px 30px;
 }
 
 .bar-container {
@@ -148,58 +222,67 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100%;
+    height: calc(100% - 30px);
+    max-width: 50px;
+    position: relative;
 }
 
 .bar {
     width: 100%;
-    max-width: 50px;
-    background: linear-gradient(180deg, #26a69a 0%, #00897b 100%);
-    border-radius: 8px 8px 0 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 8px;
-    min-height: 20px;
-    transition: height 0.5s ease;
+    max-width: 35px;
+    background: #26a69a;
+    border-radius: 4px 4px 0 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-.bar-value {
-    font-size: 12px;
-    font-weight: 600;
-    color: white;
+.bar:hover {
+    background: #00897b;
+    transform: scaleX(1.1);
 }
 
 .bar-label {
-    margin-top: 8px;
-    font-size: 13px;
+    position: absolute;
+    bottom: -28px;
+    font-size: 14px;
     color: #666;
     font-weight: 500;
 }
 
+/* 이전 Y축 스타일 제거 */
 .chart-y-axis {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-bottom: 30px;
-    color: #999;
-    font-size: 12px;
-    min-width: 30px;
-    text-align: right;
+    display: none;
 }
 
 /* 파이 차트 */
 .pie-chart-container {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 32px;
 }
 
 .pie-chart {
-    width: 160px;
-    height: 160px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
     flex-shrink: 0;
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.12),
+        inset 0 2px 4px rgba(255,255,255,0.3);
+    position: relative;
+}
+
+.pie-chart::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .pie-legend {
@@ -209,28 +292,51 @@
 .legend-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 0;
+    gap: 12px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    border-radius: 10px;
+    transition: all 0.2s;
+    cursor: default;
+}
+
+.legend-item:hover {
+    background: #f5f5f5;
+    transform: translateX(4px);
 }
 
 .legend-color {
-    width: 14px;
-    height: 14px;
-    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
     flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
 .legend-label {
     font-size: 14px;
-    color: #555;
+    color: #444;
+    font-weight: 500;
 }
 
 .empty-chart {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 180px;
     color: #999;
+    text-align: center;
+}
+
+.empty-chart p {
+    margin: 0;
+}
+
+.empty-chart-sub {
+    font-size: 13px;
+    color: #bbb;
+    margin-top: 8px !important;
 }
 
 /* AI 조언 카드 */

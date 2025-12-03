@@ -342,6 +342,17 @@
     color: #26a69a;
 }
 
+.btn-profile {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.btn-profile:hover {
+    background: #eff6ff;
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
 .btn-delete:hover {
     border-color: #f59e0b;
     color: #f59e0b;

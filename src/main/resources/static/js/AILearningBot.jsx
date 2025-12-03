@@ -57,12 +57,10 @@ const Sidebar = ({ profile }) => {
     const menuItems = [
         { icon: '📅', label: '캘린더', path: '/calendar.html' },
         { icon: '👥', label: '친구', path: '/friends.html' },
-        { icon: '🎯', label: '목표방', path: '/goals.html' },
-        { icon: '💬', label: '메시지', path: '/messages.html' },
+        { icon: '🎯', label: '목표방', path: '/goalrooms.html' },
         { icon: '📊', label: '실패 분석', path: '/analysis.html' },
         { icon: '🧠', label: 'AI 학습봇', path: '/ai.html', active: true },
         { icon: '💡', label: '포커스 모드', path: '/focus.html' },
-        { icon: '🐱', label: '캐릭터', path: '/character.html' },
     ];
 
     const level = profile?.level || 1;

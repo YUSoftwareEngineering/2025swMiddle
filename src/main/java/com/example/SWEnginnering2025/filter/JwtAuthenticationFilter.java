@@ -103,7 +103,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+            String token = bearerToken.substring(7).trim(); // 공백 제거 22312281 이가인 수정
+            // 유효하지 않은 토큰 값 체크 22312281 이가인수정
+            if (token.isEmpty() || token.equals("null") || token.equals("undefined")) {
+                return null;
+            }
+            return token;
         }
         return null;
     }

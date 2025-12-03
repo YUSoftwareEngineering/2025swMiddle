@@ -33,7 +33,7 @@ public class GoalController {
     public ResponseEntity<GoalResponse> createGoal(
             @RequestHeader("Authorization") String token,
             @RequestBody @Valid CreateGoalRequest request) { // @Valid 추가
-        String jwt = token.replace("Bearer", "");
+        String jwt = token.replace("Bearer ", "").trim();  // 공백 포함해서 제거 + trim 22312281 이가인 수정
         Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
         GoalResponse response = goalService.createGoal(userId,request);
         return ResponseEntity.ok(response);
@@ -81,7 +81,7 @@ public class GoalController {
     public ResponseEntity<AchievementColor> getAchievementColor(
             @RequestHeader("Authorization") String token,
             @RequestParam LocalDate date) {
-        String jwt = token.replace("Bearer","");
+        String jwt = token.replace("Bearer","");    //22312281 이가인 수정
         Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
         AchievementColor color = goalService.getAchievementColor(userId,date);
         return ResponseEntity.ok(color);

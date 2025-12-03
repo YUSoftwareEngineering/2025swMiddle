@@ -65,6 +65,9 @@ public class Security {
                                 "/friends.html",
                                 "/forgot-password.html",
                                 "/analysis.html",
+                                "/goalrooms.html",
+                                "/profile.html",
+                                "/settings.html",
                                 "/oauth2/**",
                                 "/error"
                         ).permitAll()
