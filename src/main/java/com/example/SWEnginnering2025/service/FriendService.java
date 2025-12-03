@@ -119,6 +119,10 @@ public class FriendService {
         // 여기서는 생략 (필요하다면 별도 NotificationService로 연동)
     }
 
+    public long countPendingRequests(Long userId) {
+        return friendRequestRepository.countByToUserIdAndStatus(userId, FriendRequestStatus.PENDING);
+    }
+
     // 받은 친구 요청 목록 조회 (loadRequestList / getRequestList)
     public List<FriendRequestDto> getReceivedRequests(Long userId) {
         User me = userRepository.findById(userId)  // userId에 해당하는 유저가 없으면 에러

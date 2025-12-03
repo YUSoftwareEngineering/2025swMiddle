@@ -78,6 +78,13 @@ public class FriendController {  // 친구 관련 HTTP 요청을 처리하는 �
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/requests/count")
+    public ResponseEntity<Integer> countFriendRequests(@RequestParam Long userId) {
+        long count = friendService.countPendingRequests(userId);
+        return ResponseEntity.ok((int) count);
+    }
+
+
     // 친구 요청 수락
     // 예: POST /api/v1/friends/requests/{id}/accept
     @PostMapping("/requests/{id}/accept")

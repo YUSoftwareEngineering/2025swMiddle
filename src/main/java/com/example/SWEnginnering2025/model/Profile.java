@@ -186,9 +186,23 @@ public class Profile {
         }
         touchUpdatedAt();
     }
-
-    // updatedAt 자동 갱신용 내부 메서드
     private void touchUpdatedAt() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // [디버깅용 추가]
+    @Override
+    public String toString() {
+        return "Profile{" +
+                "profileId=" + profileId +
+                ", userId=" + userId +
+                ", nickname='" + nickname + '\'' +
+                ", profilePublic=" + profilePublic +
+                ", activityPublic=" + activityPublic +
+                ", bioPublic=" + bioPublic +
+                ", level=" + level +
+                ", xp=" + xp +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }
