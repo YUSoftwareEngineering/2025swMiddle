@@ -2,7 +2,7 @@
     Project: FriendService.java
     Author: 최은샘
     Date of creation: 2025.11.27
-    Date of last update: 2025.11.27
+    Date of last update: 2025.12.03
 
     역할:
     - 9. 친구 검색/발견
@@ -36,8 +36,15 @@ public class FriendService {
     private final FriendRelationshipRepository friendRelationshipRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final FriendBlockRepository friendBlockRepository;
+    private final ProfileRepository profileRepository;
 
     // 9. 친구 검색/발견 (searchByKeyword / requestSearchUser / searchResult)
+    /**
+     * 친구 검색
+     * - keyword 로 이름 / userId 를 LIKE 검색
+     * - 자기 자신은 결과에서 제외
+     * - 이미 친구인지, 친구 요청 보낸 상태인지, 프로필 공개 여부까지 내려줌
+     */
     public List<FriendSearchResultDto> searchUsers(Long currentUserId, String keyword) {
         User me = userRepository.findById(currentUserId)   // 로그인해서 검색
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다.")); // 그 로그인한 사람의 id 자체가 DB에 없으면 IllegalArgumentException
@@ -58,24 +65,46 @@ public class FriendService {
                             .id(u.getId())
                             .userId(u.getUserId())
                             .name(u.getName())
-                            .isFriend(isFriend)
+                            .friend(isFriend)
                             .requestSent(requestSent)
+                            .profileOpen(u.isProfileOpen())
                             .build();
                 })
                 .collect(Collectors.toList());  // 스트림으로 변환된 FriendSearchResultDto 들을 다시 List 로 모음
     }
 
     // 친구 목록 조회 (View FriendList + loadFriendList 흐름과 대응)
+
+    /**
+     * 내 친구 목록 조회
+     * - 양방향 관계 중 "나 → 친구" 방향만 조회
+     */
+
     public List<FriendDto> getFriendList(Long userId) {
         User me = userRepository.findById(userId)  // userId 로 사용자 정보를 DB에서 조회
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         return friendRelationshipRepository.findByUser(me).stream() // 나(me)가 가진 친구 관계들을 전부 가져옴
-                .map(rel -> FriendDto.builder()
-                        .id(rel.getFriend().getId())
-                        .userId(rel.getFriend().getUserId())
-                        .name(rel.getFriend().getName())
-                        .build())
+                .map(rel -> {
+                    User friend = rel.getFriend();
+
+                    boolean blocked = friendBlockRepository
+                            .existsByUserAndBlockedUser(me, friend);
+
+                    // 🔹 프로필 엔티티에서 공개 여부 읽기
+                    Profile profile = profileRepository.findByUserId(friend.getId())
+                            .orElse(null);
+                    boolean profileOpen = profile != null && profile.isProfilePublic();
+
+                    return FriendDto.builder()
+                            .id(friend.getId())
+                            .userId(friend.getUserId())
+                            .name(friend.getName())
+                            .friend(true)                      // 친구 목록이므로 true 고정
+                            .blocked(blocked)
+                            .profileOpen(profileOpen)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 

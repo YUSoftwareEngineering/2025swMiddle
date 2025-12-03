@@ -101,9 +101,11 @@ public class ProfileLogic {
         }
         if (data.getProfilePublic() != null) {
             profile.setProfilePublic(data.getProfilePublic());
+            user.setProfileOpen(data.getProfilePublic());
         }
         if (data.getActivityPublic() != null) {
             profile.setActivityPublic(data.getActivityPublic());
+
         }
         if (data.getRepresentativeCharacterId() != null) {
             profile.setRepresentativeCharacterId(data.getRepresentativeCharacterId());
@@ -136,6 +138,8 @@ public class ProfileLogic {
         profile.setProfilePublic(settings.isProfilePublic());
         profile.setActivityPublic(settings.isActivityPublic());
         profile.setUpdatedAt(LocalDateTime.now());
+
+        user.setProfileOpen(settings.isProfilePublic());
 
         profileRepository.upsert(profile);// 5. 저장
         return true;

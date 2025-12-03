@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 // Profile 엔티티를 DB와 연결하기 위한 Repository 인터페이스
 @Repository
+
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     // userId로 프로필 조회
