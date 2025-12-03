@@ -292,3 +292,65 @@ const friendApi = {
         return authFetch(`/api/v1/friends/blocked?userId=${userId}`);
     }
 };
+
+// AI 학습봇 및 Q&A 히스토리 API
+const studentBotApi = {
+    // 1. 질문 보내기 + 답변 받기 + 자동 저장
+    // POST /api/v1/student-bot/ask
+    ask: async (data) => {
+        // data: { historyId: Long | null, questionText: String, difficulty: String }
+        return authFetch('/api/v1/student-bot/ask', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+
+    // 2. Q&A 히스토리 목록 조회
+    // GET /api/v1/student-bot/history?page=...&size=...&keyword=...&favoritesOnly=...
+    getHistoryList: async (params) => {
+        // params: { page: int, size: int, keyword: String, favoritesOnly: boolean }
+        const urlParams = new URLSearchParams(params).toString();
+        return authFetch(`/api/v1/student-bot/history?${urlParams}`);
+    },
+
+    // 3. 히스토리 상세 조회
+    // GET /api/v1/student-bot/history/{id}
+    getHistoryDetail: async (historyId) => {
+        return authFetch(`/api/v1/student-bot/history/${historyId}`);
+    },
+
+    // 4. 개별 히스토리 삭제
+    // DELETE /api/v1/student-bot/history/{id}
+    deleteHistory: async (historyId) => {
+        return authFetch(`/api/v1/student-bot/history/${historyId}`, {
+            method: 'DELETE'
+        });
+    },
+
+    // 5. 전체 히스토리 삭제
+    // DELETE /api/v1/student-bot/history
+    deleteAllHistory: async () => {
+        return authFetch('/api/v1/student-bot/history', {
+            method: 'DELETE'
+        });
+    },
+
+    // 6. 즐겨찾기 설정/해제
+    // POST /api/v1/student-bot/history/{id}/favorite?value=true
+    updateFavorite: async (historyId, value) => {
+        return authFetch(`/api/v1/student-bot/history/${historyId}/favorite?value=${value}`, {
+            method: 'POST'
+        });
+    }
+};
+
+const api = {
+    authApi,
+    calendarApi,
+    goalApi,
+    failureApi,
+    focusApi,
+    profileApi,
+    friendApi,
+    studentBotApi
+};
