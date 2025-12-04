@@ -102,11 +102,20 @@ public class JwtTokenProvider {
 
     // 토큰 유효성 검사
     public boolean validateToken(String authToken) {
+        // null 또는 빈 토큰 체크
+        if (authToken == null || authToken.trim().isEmpty()) {
+            System.out.println("JWT token is null or empty");
+            return false;
+        }
+        
+        // 토큰 정리 (앞뒤 공백 제거)
+        String token = authToken.trim();
+        
         try {
             Jwts.parser()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(authToken);
+                    .parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             // 잘못된 JWT 서명

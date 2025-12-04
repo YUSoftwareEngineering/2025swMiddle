@@ -5,12 +5,10 @@ const Sidebar = ({ profile }) => {
     const menuItems = [
         { icon: '📅', label: '캘린더', path: '/home.html' },
         { icon: '👥', label: '친구', path: '/friends.html', active: true },
-        { icon: '🎯', label: '목표방', path: '/goals.html' },
-        { icon: '💬', label: '메시지', path: '/messages.html' },
+        { icon: '🎯', label: '목표방', path: '/goalrooms.html' },
         { icon: '📊', label: '실패 분석', path: '/analysis.html' },
         { icon: '🤖', label: 'AI 학습봇', path: '/ai.html' },
         { icon: '⏱️', label: '포커스 모드', path: '/focus.html' },
-        { icon: '🎮', label: '캐릭터', path: '/character.html' },
     ];
 
     // TODO: 백엔드에 레벨/경험치 API가 추가되면 여기서 사용
@@ -124,7 +122,7 @@ const FriendsList = ({ userId, onRefresh }) => {
                         <div className="friend-id">@{friend.userId}</div>
                     </div>
                     <div className="friend-actions">
-                        <button className="btn-action btn-delete" onClick={() => handleDelete(friend.userId)}>
+                        <button className="btn-action btn-profile" onClick={() => window.location.href = `/profile.html?userId=${friend.id}`}>
                             프로필
                         </button>
                         <button className="btn-action btn-delete" onClick={() => handleDelete(friend.id)}>

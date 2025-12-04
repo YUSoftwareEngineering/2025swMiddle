@@ -1,41 +1,14 @@
 const { useState, useEffect } = React;
 
-// 로컬 스토리지 기반 실패 기록 관리 (백엔드 API가 없으므로 프론트에서 관리)
-const failureStorage = {
-    getKey: () => {
-        const userId = tokenManager?.getUserId?.() || 'guest';
-        return `failureAnalysis_${userId}`;
-    },
-    
-    getRecords: () => {
-        try {
-            const key = failureStorage.getKey();
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : [];
-        } catch (e) {
-            return [];
-        }
-    },
-    
-    addRecord: (record) => {
-        const records = failureStorage.getRecords();
-        records.unshift({ ...record, id: Date.now() });
-        const trimmed = records.slice(0, 100);
-        localStorage.setItem(failureStorage.getKey(), JSON.stringify(trimmed));
-    }
-};
-
 // 사이드바 컴포넌트
 const Sidebar = ({ profile }) => {
     const menuItems = [
         { icon: '📅', label: '캘린더', path: '/home.html' },
         { icon: '👥', label: '친구', path: '/friends.html' },
-        { icon: '🎯', label: '목표방', path: '/goals.html' },
-        { icon: '💬', label: '메시지', path: '/messages.html' },
+        { icon: '🎯', label: '목표방', path: '/goalrooms.html' },
         { icon: '📊', label: '실패 분석', path: '/analysis.html', active: true },
         { icon: '🤖', label: 'AI 학습봇', path: '/ai.html' },
         { icon: '⏱️', label: '포커스 모드', path: '/focus.html' },
-        { icon: '🎮', label: '캐릭터', path: '/character.html' },
     ];
 
     const level = profile?.level || 1;
@@ -76,28 +49,50 @@ const Sidebar = ({ profile }) => {
 // 막대 그래프 컴포넌트
 const BarChart = ({ data, maxValue }) => {
     const days = ['월', '화', '수', '목', '금', '토', '일'];
-    const max = maxValue || Math.max(...data, 1);
+    const chartData = data || [0, 0, 0, 0, 0, 0, 0]; // 기본값 설정
+    const actualMax = Math.max(...chartData);
+    const max = Math.max(actualMax, maxValue || 1, 1); // 최소 1 보장
+    
+    // Y축 눈금 계산 (5단계로 나눔)
+    const step = Math.ceil(max / 4) || 1;
+    const adjustedMax = Math.ceil(max / step) * step;
+    const yAxisLabels = [];
+    for (let i = adjustedMax; i >= 0; i -= step) {
+        yAxisLabels.push(i);
+    }
     
     return (
         <div className="bar-chart">
-            <div className="chart-bars">
-                {data.map((value, i) => (
-                    <div key={i} className="bar-container">
-                        <div 
-                            className="bar" 
-                            style={{ height: `${(value / max) * 100}%` }}
-                            title={`${days[i]}: ${value}회`}
-                        >
-                            <span className="bar-value">{value}</span>
-                        </div>
-                        <span className="bar-label">{days[i]}</span>
-                    </div>
+            <div className="chart-y-axis-left">
+                {yAxisLabels.map((val, i) => (
+                    <span key={i}>{val}</span>
                 ))}
             </div>
-            <div className="chart-y-axis">
-                <span>{max}</span>
-                <span>{Math.round(max / 2)}</span>
-                <span>0</span>
+            <div className="chart-area">
+                <div className="chart-grid">
+                    {yAxisLabels.map((_, i) => (
+                        <div key={i} className="grid-line"></div>
+                    ))}
+                </div>
+                <div className="chart-bars">
+                    {chartData.map((value, i) => {
+                        const heightPercent = adjustedMax > 0 ? (value / adjustedMax) * 100 : 0;
+                        return (
+                            <div key={i} className="bar-container">
+                                <div 
+                                    className="bar"
+                                    style={{ 
+                                        height: `${heightPercent}%`,
+                                        background: '#26a69a',
+                                        minHeight: value > 0 ? '4px' : '0'
+                                    }}
+                                    title={`${days[i]}요일: ${value}회 실패`}
+                                />
+                                <span className="bar-label">{days[i]}</span>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );
@@ -105,7 +100,8 @@ const BarChart = ({ data, maxValue }) => {
 
 // 파이 차트 컴포넌트
 const PieChart = ({ data }) => {
-    const colors = ['#ef5350', '#ff9800', '#ffeb3b', '#4caf50', '#2196f3', '#9c27b0'];
+    // 더 선명하고 현대적인 색상 팔레트
+    const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#95E1D3', '#6C5CE7', '#FD79A8', '#00B894', '#0984E3'];
     const total = data.reduce((sum, item) => sum + item.count, 0) || 1;
     
     let currentAngle = 0;
@@ -124,7 +120,6 @@ const PieChart = ({ data }) => {
         };
     });
     
-    // CSS conic-gradient 생성
     const gradientParts = segments.map((seg, i) => {
         const start = segments.slice(0, i).reduce((sum, s) => sum + s.percentage, 0);
         const end = start + seg.percentage;
@@ -152,16 +147,18 @@ const PieChart = ({ data }) => {
 // AI 조언 생성 함수
 const generateAdvice = (analysisData) => {
     const advice = [];
-    
-    const { dayOfWeekStats, reasonStats, successRate, totalFailures } = analysisData;
+    const dayOfWeekStats = analysisData?.dayOfWeekStats || [0, 0, 0, 0, 0, 0, 0];
+    const reasonStats = analysisData?.reasonStats || [];
+    const successRate = analysisData?.successRate || 0;
+    const totalFailures = analysisData?.totalFailures || 0;
+    const days = ['월', '화', '수', '목', '금', '토', '일'];
     
     // 1. 가장 취약한 요일 분석
-    const days = ['월', '화', '수', '목', '금', '토', '일'];
     const maxFailDay = dayOfWeekStats.indexOf(Math.max(...dayOfWeekStats));
-    const weekendFailures = dayOfWeekStats[5] + dayOfWeekStats[6];
+    const weekendFailures = (dayOfWeekStats[5] || 0) + (dayOfWeekStats[6] || 0);
     const weekdayFailures = dayOfWeekStats.slice(0, 5).reduce((a, b) => a + b, 0);
     
-    if (weekendFailures > weekdayFailures * 0.5) {
+    if (weekendFailures > weekdayFailures * 0.5 && weekendFailures > 0) {
         advice.push({
             type: 'warning',
             icon: '⚠️',
@@ -203,7 +200,7 @@ const generateAdvice = (analysisData) => {
             type: 'tip',
             icon: '💡',
             title: '목표 난이도를 조정해보세요',
-            description: '현재 성공률이 낮습니다. 목표를 더 작은 단위로 쪼개서 설정해보세요. 예: 30분 → 15분'
+            description: '현재 성공률이 낮습니다. 목표를 더 작은 단위로 쪼개서 설정해보세요.'
         });
     } else if (successRate >= 80) {
         advice.push({
@@ -232,18 +229,23 @@ const AnalysisPage = () => {
     const [myProfile, setMyProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [monthlyData, setMonthlyData] = useState(null);
-    const [failureRecords, setFailureRecords] = useState([]);
+    const [failureTags, setFailureTags] = useState([]);
     const [analysisData, setAnalysisData] = useState({
         totalFailures: 0,
         successRate: 0,
         weakestDay: '없음',
         dayOfWeekStats: [0, 0, 0, 0, 0, 0, 0],
         reasonStats: [],
-        recentFailures: []
+        recentFailures: [],
+        totalGoals: 0,
+        completedGoals: 0,
+        lastMonthChange: 0,
+        monthlySummary: {}
     });
     
     const userId = tokenManager.getUserId();
     const days = ['월', '화', '수', '목', '금', '토', '일'];
+    const dayKeyMap = { MON: 0, TUE: 1, WED: 2, THU: 3, FRI: 4, SAT: 5, SUN: 6 };
     
     // 프로필 로드
     const loadMyProfile = async () => {
@@ -252,11 +254,7 @@ const AnalysisPage = () => {
             setMyProfile(data);
         } catch (err) {
             console.error('프로필 로드 실패:', err);
-            setMyProfile({
-                nickname: tokenManager.getNickname() || '사용자',
-                level: 1,
-                xp: 0
-            });
+            setMyProfile({ nickname: tokenManager.getNickname() || '사용자', level: 1, xp: 0 });
         }
     };
     
@@ -273,100 +271,136 @@ const AnalysisPage = () => {
         }
     };
     
+    // 백엔드에서 실패 요약 데이터 로드
+    const loadFailureSummary = async () => {
+        try {
+            const data = await failureApi.getSummary({ userId, weeks: 4 });
+            return data;
+        } catch (err) {
+            console.error('실패 요약 로드 실패:', err);
+            return null;
+        }
+    };
+    
+    // 실패 태그 로드
+    const loadFailureTags = async () => {
+        try {
+            const tags = await failureApi.getTags(userId);
+            setFailureTags(tags || []);
+            return tags || [];
+        } catch (err) {
+            console.error('실패 태그 로드 실패:', err);
+            return [];
+        }
+    };
+    
     // 분석 데이터 계산
-    const calculateAnalysis = (monthData, records) => {
-        // 요일별 실패 횟수 계산
-        const dayOfWeekStats = [0, 0, 0, 0, 0, 0, 0];
-        let totalGoals = 0;
-        let failedGoals = 0;
-        const recentFailures = [];
+    const calculateAnalysis = (monthData, summaryData, tags) => {
+        // 요일별 실패 횟수 (백엔드 데이터 사용)
+        let dayOfWeekStats = [0, 0, 0, 0, 0, 0, 0];
+        let totalFailures = 0;
         
-        // 월간 데이터에서 실패 목표 분석
-        if (monthData?.days) {
-            monthData.days.forEach(day => {
-                if (day.goals) {
-                    day.goals.forEach(goal => {
-                        totalGoals++;
-                        if (goal.status === 'FAILED') {
-                            failedGoals++;
-                            // 요일 계산 (0=일요일이므로 조정)
-                            const date = new Date(day.date);
-                            const dayOfWeek = date.getDay();
-                            const adjustedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-                            dayOfWeekStats[adjustedDay]++;
-                            
-                            recentFailures.push({
-                                title: goal.title,
-                                category: goal.category || '기타',
-                                date: day.date,
-                                reason: '기록 없음'
-                            });
-                        }
-                    });
+        // 백엔드 summary 데이터가 있으면 사용
+        if (summaryData?.dowSummary) {
+            Object.entries(summaryData.dowSummary).forEach(([key, value]) => {
+                const idx = dayKeyMap[key];
+                if (idx !== undefined) {
+                    dayOfWeekStats[idx] = Number(value) || 0;
+                    totalFailures += Number(value) || 0;
                 }
             });
         }
         
-        // 로컬 저장소의 실패 기록 분석 (태그 정보 포함)
-        const reasonCount = {};
-        records.forEach(record => {
-            if (record.tags) {
-                record.tags.forEach(tag => {
-                    const tagName = typeof tag === 'string' ? tag : tag.name;
-                    reasonCount[tagName] = (reasonCount[tagName] || 0) + 1;
-                });
-            }
-            if (record.reason) {
-                reasonCount[record.reason] = (reasonCount[record.reason] || 0) + 1;
-            }
-            
-            // 요일 통계 업데이트
-            if (record.date) {
-                const date = new Date(record.date);
-                const dayOfWeek = date.getDay();
-                const adjustedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-                if (!monthData?.days) {
-                    dayOfWeekStats[adjustedDay]++;
+        // 월간 데이터에서 총 목표 수와 완료된 목표 수 계산
+        let totalGoals = 0;
+        let completedGoals = 0;
+        let failedFromCalendar = 0;
+        
+        if (monthData?.days) {
+            monthData.days.forEach(day => {
+                // totalGoals와 doneCount 사용 (백엔드가 반환하는 필드)
+                totalGoals += day.totalGoals || 0;
+                completedGoals += day.doneCount || 0;
+                
+                // 실패 목표 수 = 총 목표 - 완료 (대략적인 계산)
+                const dayFailed = (day.totalGoals || 0) - (day.doneCount || 0);
+                if (dayFailed > 0) {
+                    failedFromCalendar += dayFailed;
+                    
+                    // 요일별 실패 통계 (summary 데이터가 없을 경우에만)
+                    if (totalFailures === 0) {
+                        const date = new Date(day.date);
+                        const dayOfWeek = date.getDay();
+                        const adjustedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                        dayOfWeekStats[adjustedDay] += dayFailed;
+                    }
                 }
-            }
-        });
-        
-        // 실패 원인 통계 정렬
-        const reasonStats = Object.entries(reasonCount)
-            .map(([name, count]) => ({ name, count }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 5);
-        
-        // 기본 원인 추가 (데이터가 없을 경우)
-        if (reasonStats.length === 0 && failedGoals > 0) {
-            reasonStats.push(
-                { name: '시간 부족', count: Math.ceil(failedGoals * 0.35) },
-                { name: '동기 부여 부족', count: Math.ceil(failedGoals * 0.25) },
-                { name: '피로', count: Math.ceil(failedGoals * 0.20) },
-                { name: '예상치 못한 일정', count: Math.ceil(failedGoals * 0.15) },
-                { name: '기타', count: Math.ceil(failedGoals * 0.05) }
-            );
+            });
         }
+        
+        // 백엔드 summary 데이터가 없으면 캘린더 기반 실패 횟수 사용
+        if (totalFailures === 0) {
+            totalFailures = failedFromCalendar;
+        }
+        
+        // 태그 기반 실패 원인 분석
+        let reasonStats = [];
+        if (tags && tags.length > 0) {
+            // 태그 데이터가 있으면 사용 (useCount가 있으면 사용, 없으면 1로 설정)
+            reasonStats = tags
+                .filter(tag => tag && tag.name)
+                .slice(0, 5)
+                .map(tag => ({ 
+                    name: tag.name, 
+                    count: tag.useCount || tag.count || 1 
+                }));
+        }
+        
+        console.log('태그 데이터:', tags);
+        console.log('실패 원인 통계:', reasonStats);
         
         // 가장 취약한 요일 찾기
         const maxFailures = Math.max(...dayOfWeekStats);
         const weakestDayIndex = dayOfWeekStats.indexOf(maxFailures);
         const weakestDay = maxFailures > 0 ? days[weakestDayIndex] + '요일' : '없음';
         
-        // 성공률 계산
-        const successRate = totalGoals > 0 ? Math.round(((totalGoals - failedGoals) / totalGoals) * 100) : 100;
+        // 성공률 계산 (완료된 목표 / 총 목표)
+        // 실패가 있으면 100%가 될 수 없음
+        let successRate = 0;
+        if (totalGoals > 0) {
+            successRate = Math.round((completedGoals / totalGoals) * 100);
+        } else if (totalFailures > 0) {
+            // 목표는 없지만 실패 기록이 있으면 0%
+            successRate = 0;
+        } else {
+            // 데이터가 없으면 표시하지 않음
+            successRate = 0;
+        }
         
-        // 최근 실패 기록 합치기
-        const allRecentFailures = [...recentFailures, ...records.slice(0, 5)].slice(0, 10);
+        // 지난 달 대비 변화 계산
+        let lastMonthChange = 0;
+        if (summaryData?.monthlySummary) {
+            const months = Object.keys(summaryData.monthlySummary).sort();
+            if (months.length >= 2) {
+                const lastMonth = summaryData.monthlySummary[months[months.length - 2]] || 0;
+                const thisMonth = summaryData.monthlySummary[months[months.length - 1]] || 0;
+                if (lastMonth > 0) {
+                    lastMonthChange = Math.round(((thisMonth - lastMonth) / lastMonth) * 100);
+                }
+            }
+        }
         
         return {
-            totalFailures: failedGoals + records.length,
+            totalFailures,
             successRate,
             weakestDay,
             dayOfWeekStats,
             reasonStats,
-            recentFailures: allRecentFailures,
-            lastMonthChange: -20 // 더미 데이터 (지난 달 대비)
+            recentFailures: [],
+            totalGoals,
+            completedGoals,
+            lastMonthChange,
+            monthlySummary: summaryData?.monthlySummary || {}
         };
     };
     
@@ -379,12 +413,16 @@ const AnalysisPage = () => {
         
         const loadData = async () => {
             setLoading(true);
-            await loadMyProfile();
-            const monthData = await loadMonthlyData();
-            const records = failureStorage.getRecords();
-            setFailureRecords(records);
             
-            const analysis = calculateAnalysis(monthData, records);
+            // 병렬로 데이터 로드
+            const [_, monthData, summaryData, tags] = await Promise.all([
+                loadMyProfile(),
+                loadMonthlyData(),
+                loadFailureSummary(),
+                loadFailureTags()
+            ]);
+            
+            const analysis = calculateAnalysis(monthData, summaryData, tags);
             setAnalysisData(analysis);
             setLoading(false);
         };
@@ -427,31 +465,42 @@ const AnalysisPage = () => {
                 {/* 요약 카드 */}
                 <div className="summary-cards">
                     <div className="summary-card">
-                        <h3>총 실패 횟수 (이번 달)</h3>
+                        <h3>총 실패 횟수 (최근 4주)</h3>
                         <div className="summary-value">{analysisData.totalFailures}회</div>
                         <div className="summary-bar">
                             <div className="summary-progress" style={{ width: '100%', background: '#26a69a' }}></div>
                         </div>
-                        <div className="summary-change negative">
-                            지난 달 대비 {analysisData.lastMonthChange}%
+                        <div className={`summary-change ${analysisData.lastMonthChange <= 0 ? 'positive' : 'negative'}`}>
+                            지난 달 대비 {analysisData.lastMonthChange > 0 ? '+' : ''}{analysisData.lastMonthChange}%
                         </div>
                     </div>
                     
                     <div className="summary-card">
-                        <h3>평균 성공률</h3>
-                        <div className="summary-value">{analysisData.successRate}%</div>
+                        <h3>목표 달성률</h3>
+                        <div className="summary-value">
+                            {analysisData.totalGoals > 0 
+                                ? `${analysisData.successRate}%` 
+                                : '-'}
+                        </div>
                         <div className="summary-bar">
-                            <div className="summary-progress" style={{ width: `${analysisData.successRate}%`, background: '#26a69a' }}></div>
+                            <div className="summary-progress" style={{ 
+                                width: `${analysisData.totalGoals > 0 ? analysisData.successRate : 0}%`, 
+                                background: analysisData.successRate >= 70 ? '#26a69a' : '#f59e0b'
+                            }}></div>
                         </div>
                         <div className="summary-change positive">
-                            개선 중 📈
+                            {analysisData.totalGoals > 0 
+                                ? `${analysisData.completedGoals}/${analysisData.totalGoals} 완료` 
+                                : '데이터 없음'}
                         </div>
                     </div>
                     
                     <div className="summary-card">
                         <h3>가장 취약한 요일</h3>
                         <div className="summary-value">{analysisData.weakestDay}</div>
-                        <div className="summary-badge">실패율 높음</div>
+                        <div className="summary-badge">
+                            {analysisData.weakestDay !== '없음' ? '실패율 높음' : '데이터 없음'}
+                        </div>
                     </div>
                 </div>
                 
@@ -464,8 +513,8 @@ const AnalysisPage = () => {
                             <p>어떤 요일에 실패가 많은지 확인하세요</p>
                         </div>
                         <BarChart 
-                            data={analysisData.dayOfWeekStats} 
-                            maxValue={Math.max(...analysisData.dayOfWeekStats, 8)}
+                            data={analysisData.dayOfWeekStats || [0,0,0,0,0,0,0]} 
+                            maxValue={Math.max(...(analysisData.dayOfWeekStats || [0,0,0,0,0,0,0]), 1)}
                         />
                     </div>
                     
@@ -480,6 +529,7 @@ const AnalysisPage = () => {
                         ) : (
                             <div className="empty-chart">
                                 <p>아직 실패 원인 데이터가 없습니다.</p>
+                                <p className="empty-chart-sub">실패 기록 시 태그를 선택하면 원인 분석이 표시됩니다.</p>
                             </div>
                         )}
                     </div>
@@ -526,7 +576,7 @@ const AnalysisPage = () => {
                                                     {typeof tag === 'string' ? tag : tag.name}
                                                 </span>
                                             ))}
-                                            {record.reason && (
+                                            {record.reason && record.reason !== '기록 없음' && (
                                                 <span className="reason-tag">{record.reason}</span>
                                             )}
                                         </div>

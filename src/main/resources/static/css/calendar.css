@@ -462,6 +462,26 @@
     color: #ef4444;
 }
 
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+    color: #9ca3af;
+}
+
+.action-btn:disabled:hover {
+    border-color: #e5e7eb;
+    color: #9ca3af;
+    transform: none;
+}
+
+.action-btn.fail:disabled {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #f87171;
+}
+
 /* 빈 목표 */
 .empty-goals {
     text-align: center;
