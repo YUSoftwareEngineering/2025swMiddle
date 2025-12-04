@@ -14,11 +14,29 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    
+    // 사용자 ID로 성공 개수 조회
+    public int getSuccessCountByUserId(String userId) {
+        return userRepository.findSuccessCountByUserId(userId);
+    }
+    
+    // 사용자 ID로 성공 개수 증가시키기
+    public void updateSuccessCount(String userId, int increment) {
+        Optional<User> userOpt = userRepository.findByUserId(userId);
+        
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setSuccessCount(user.getSuccessCount() + increment);  // 성공 개수 증가
+            userRepository.save(user);  // 업데이트된 사용자 저장
+        }
+    }
 
     // 환경 설정 업데이트
     @Transactional

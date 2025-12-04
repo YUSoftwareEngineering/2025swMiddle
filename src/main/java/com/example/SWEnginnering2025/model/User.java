@@ -55,6 +55,9 @@ public class User {
     @Builder.Default
     @Column(nullable = false)
     private boolean isNotificationEnabled = true;
+    
+    @Column
+    private int successCount;
 
     // [신규 추가 2] 친구 요청 정책 (기본값: ALL)
     @Builder.Default
