@@ -98,6 +98,11 @@ const FriendsList = ({ userId, onRefresh }) => {
         }
     };
 
+    // 프로필 버튼 클릭 시 프로필 페이지로 이동
+    const handleProfile = (friendUserId) => {
+        window.location.href = `/profile.html?userId=${friendUserId}`;
+    };
+
     if (loading) return <div className="loading">로딩 중...</div>;
 
     if (friends.length === 0) {
@@ -124,9 +129,8 @@ const FriendsList = ({ userId, onRefresh }) => {
                         <div className="friend-id">@{friend.userId}</div>
                     </div>
                     <div className="friend-actions">
-                        <button className="btn-action btn-delete" onClick={() => handleDelete(friend.userId)}>
-                            프로필
-                        </button>
+                         {/* 프로필 공개일 때만 버튼 생성 */}
+                         {friend.profileOpen && ( <button className="btn-action btn-profile" onClick={() => handleProfile(friend.id)}>프로필</button>)}
                         <button className="btn-action btn-delete" onClick={() => handleDelete(friend.id)}>
                             삭제
                         </button>

@@ -2,7 +2,7 @@
     Project: User.java
     Author: YHW
     Date of creation: 2025.11.21
-    Date of last update: 2025.11.28 (사용자 설정 관련 추가)
+    Date of last update: 2025.12.03 (사용자 설정 관련 추가)
 */
 
 package com.example.SWEnginnering2025.model;
@@ -55,6 +55,14 @@ public class User {
     @Builder.Default
     @Column(nullable = false)
     private boolean isNotificationEnabled = true;
+
+    // [추가] 사용자 프로필 공개 여부
+    @Column(name = "profile_open", nullable = false)
+    private boolean profileOpen = false; // 기본값: 비공개
+
+    public boolean isProfileOpen() { return profileOpen; }
+    public void setProfileOpen(boolean profileOpen) { this.profileOpen = profileOpen; }
+
 
     // [신규 추가 2] 친구 요청 정책 (기본값: ALL)
     @Builder.Default

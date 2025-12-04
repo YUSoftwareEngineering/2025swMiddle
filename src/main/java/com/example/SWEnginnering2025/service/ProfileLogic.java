@@ -99,10 +99,19 @@ public class ProfileLogic {
             profile.setBio(data.getBio());
         }
         if (data.getProfilePublic() != null) {
+<<<<<<< HEAD
             profile.setProfilePublic(data.getProfilePublic().booleanValue());
         }
         if (data.getActivityPublic() != null) {
             profile.setActivityPublic(data.getActivityPublic().booleanValue());
+=======
+            profile.setProfilePublic(data.getProfilePublic());
+            user.setProfileOpen(data.getProfilePublic());
+        }
+        if (data.getActivityPublic() != null) {
+            profile.setActivityPublic(data.getActivityPublic());
+
+>>>>>>> origin/YHW2
         }
         if (data.getRepresentativeCharacterId() != null) {
             profile.setRepresentativeCharacterId(data.getRepresentativeCharacterId());
@@ -134,7 +143,13 @@ public class ProfileLogic {
         profile.setActivityPublic(settings.isActivityPublic());
         profile.setUpdatedAt(LocalDateTime.now());
 
+<<<<<<< HEAD
         profileRepository.upsert(profile);
+=======
+        user.setProfileOpen(settings.isProfilePublic());
+
+        profileRepository.upsert(profile);// 5. 저장
+>>>>>>> origin/YHW2
         return true;
     }
 
